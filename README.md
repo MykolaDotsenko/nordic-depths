@@ -1,10 +1,10 @@
 # Nordic Depths
 
-[![Quality](https://github.com/MykolaDotsenko/Parallax-effect/actions/workflows/quality.yml/badge.svg)](https://github.com/MykolaDotsenko/Parallax-effect/actions/workflows/quality.yml)
+[![Quality](https://github.com/MykolaDotsenko/nordic-depths/actions/workflows/quality.yml/badge.svg)](https://github.com/MykolaDotsenko/nordic-depths/actions/workflows/quality.yml)
 
 **One continuous story: the original 2023 parallax first, then the same idea of clear layers carried into interface craft and software architecture.**
 
-[**Open the live experience →**](https://mykoladotsenko.github.io/Parallax-effect/) · [Architecture](./ARCHITECTURE.md) · [Motion system](./MOTION.md)
+[**Open the live experience →**](https://mykoladotsenko.github.io/nordic-depths/) · [Architecture](./ARCHITECTURE.md) · [Motion system](./MOTION.md)
 
 Nordic Depths no longer replaces the repository's origin. It preserves the original forest + dungeon experience at the top of the page, including the historical layer ratios that made the parallax visually obvious, then turns the same artwork into a modern interaction-engineering case study below.
 
