@@ -68,6 +68,8 @@ test("capture visual preview", async ({ page }, testInfo) => {
   await page.waitForTimeout(300);
   await page.screenshot({ path: out("05-motion-lab") });
   await page.keyboard.press("Escape");
+  // Keep the restored focus ring on the toggle out of the remaining screenshots.
+  await page.evaluate(() => document.activeElement?.blur());
 
   const xray = await page.evaluate(() => {
     const section = document.querySelector("#xray");

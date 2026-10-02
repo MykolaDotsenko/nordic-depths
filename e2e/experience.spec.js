@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { scrollToY } from "./helpers.js";
+import { contrastOverBackground, scrollToY } from "./helpers.js";
 
 const isMobileProject = (testInfo) => testInfo.project.name === "mobile-chromium";
 
@@ -344,6 +344,16 @@ for (const language of ["fi", "en"]) {
     expect(blocking).toEqual([]);
   });
 }
+
+test("copy over the aurora and the mist keeps 4.5:1 contrast", async ({ page }, testInfo) => {
+  test.skip(!testInfo.project.name.includes("chromium"), "Pixel sampling runs in Chromium, desktop and mobile");
+  test.setTimeout(90_000);
+
+  await page.goto("/");
+  for (const selector of ["#aurora .eyebrow", "#aurora-title", ".aurora__text", ".contact__text", '[data-i18n="mistText"]']) {
+    expect(await contrastOverBackground(page, selector), selector).toBeGreaterThanOrEqual(4.5);
+  }
+});
 
 test("the first load stays light and never pulls the source artwork", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.includes("chromium"), "Byte accounting uses Chromium's network sizes");

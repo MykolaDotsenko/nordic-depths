@@ -27,7 +27,7 @@
 :root {
   color-scheme: dark;
   --ink: #f2f5ef;
-  --ink-muted: #aab6ae;
+  --ink-muted: #b4c0b8;
   --surface: #07110f;
   --sage: #91aa9d;
   --ember: #e7c879;
@@ -1365,7 +1365,7 @@ html.js .scene--xray {
   width: 140%;
   height: 34%;
   border-radius: 50%;
-  background: linear-gradient(90deg, transparent, rgb(207 224 215 / 17%), transparent);
+  background: linear-gradient(90deg, transparent, rgb(207 224 215 / 13%), transparent);
   filter: blur(44px);
   animation: mist-drift 26s ease-in-out infinite alternate;
 }
@@ -1391,10 +1391,16 @@ html.js .scene--xray {
   aspect-ratio: 1;
   border: 1px solid rgb(191 227 207 / 20%);
   border-radius: 50%;
-  background: radial-gradient(circle at 40% 38%, rgb(186 225 207 / 24%), transparent 60%);
+  background: radial-gradient(circle at 40% 38%, rgb(186 225 207 / 18%), transparent 60%);
   box-shadow:
     0 0 0 40px rgb(197 228 214 / 3%),
-    0 0 160px rgb(101 190 151 / 14%);
+    0 0 160px rgb(101 190 151 / 11%);
+}
+
+@media (max-width: 800px) {
+  .mist__orb {
+    opacity: 0.6;
+  }
 }
 
 @keyframes mist-drift {
@@ -1911,16 +1917,16 @@ html.js .scene--xray {
 }
 
 .aurora__ribbon--one {
-  top: 12%;
+  top: 6%;
   background: linear-gradient(95deg, transparent 5%, var(--aurora-a), transparent 75%);
-  opacity: 0.78;
+  opacity: 0.74;
   animation: aurora-drift 12s ease-in-out infinite alternate;
 }
 
 .aurora__ribbon--two {
-  top: 27%;
+  top: 20%;
   background: linear-gradient(110deg, transparent 12%, var(--aurora-b), transparent 68%);
-  opacity: 0.58;
+  opacity: 0.52;
   animation: aurora-drift 16s ease-in-out -4s infinite alternate-reverse;
 }
 
@@ -1932,7 +1938,7 @@ html.js .scene--xray {
 }
 
 .aurora__ribbon--four {
-  top: 40%;
+  top: 64%;
   height: 26%;
   background: linear-gradient(100deg, transparent 20%, rgb(124 227 189 / 80%), rgb(213 138 255 / 60%), transparent 80%);
   opacity: 0.32;
@@ -2022,14 +2028,35 @@ html.js .scene--xray {
 }
 
 .aurora__content {
+  position: relative;
+  z-index: 0;
   width: var(--container);
   text-align: center;
+}
+
+/* A soft night-sky scrim keeps the copy readable while the aurora glows around it. */
+.aurora__content::before {
+  content: "";
+  position: absolute;
+  inset: -22% -16% -8%;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgb(3 8 7 / 84%), rgb(3 8 7 / 70%) 62%, transparent);
+  pointer-events: none;
+}
+
+.aurora__content .eyebrow {
+  display: inline-block;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgb(3 8 7 / 74%);
+  padding: 7px 14px;
 }
 
 .aurora__content h2 {
   max-width: 1100px;
   margin-inline: auto;
   font-size: clamp(2.3rem, 8.4vw, 8rem);
+  text-shadow: 0 2px 32px rgb(0 0 0 / 50%);
 }
 
 .aurora__text {
