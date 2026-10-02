@@ -20,15 +20,20 @@
     <meta property="og:url" content="https://mykoladotsenko.github.io/nordic-depths/" />
     <meta
       property="og:image"
-      content="https://mykoladotsenko.github.io/nordic-depths/img/layer-base.png"
+      content="https://mykoladotsenko.github.io/nordic-depths/img/og-image.jpg"
     />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://mykoladotsenko.github.io/nordic-depths/img/og-image.jpg" />
+    <link rel="icon" href="img/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="img/icon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="img/icon-180.png" />
 
     <title>Nordic Depths — Accessible Cinematic Scroll Experience</title>
 
     <link rel="preload" href="fonts/raleway-regular.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="fonts/raleway-black.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="img/layer-base.png" as="image" fetchpriority="high" />
 
     <link rel="stylesheet" href="css/main.css" />
 
@@ -145,17 +150,68 @@
               class="original-layer original-layers__base"
               data-original-layer="far"
               aria-hidden="true"
-            ></div>
+            >
+              <picture>
+                <source
+                  media="(max-aspect-ratio: 3/4)"
+                  type="image/webp"
+                  srcset="img/layer-base-portrait-810.webp 810w, img/layer-base-portrait-1215.webp 1215w, img/layer-base-portrait-1620.webp 1620w"
+                  sizes="75vh"
+                />
+                <img
+                  src="img/layer-base-1920.webp"
+                  srcset="img/layer-base-1280.webp 1280w, img/layer-base-1920.webp 1920w, img/layer-base-2560.webp 2560w, img/layer-base-3840.webp 3840w"
+                  sizes="max(100vw, 177.78vh)"
+                  width="3840"
+                  height="2160"
+                  alt="" fetchpriority="high"
+                />
+              </picture>
+            </div>
             <div
               class="original-layer original-layers__middle"
               data-original-layer="middle"
               aria-hidden="true"
-            ></div>
+            >
+              <picture>
+                <source
+                  media="(max-aspect-ratio: 3/4)"
+                  type="image/webp"
+                  srcset="img/layer-middle-portrait-810.webp 810w, img/layer-middle-portrait-1215.webp 1215w, img/layer-middle-portrait-1620.webp 1620w"
+                  sizes="75vh"
+                />
+                <img
+                  src="img/layer-middle-1920.webp"
+                  srcset="img/layer-middle-1280.webp 1280w, img/layer-middle-1920.webp 1920w, img/layer-middle-2560.webp 2560w, img/layer-middle-3840.webp 3840w"
+                  sizes="max(100vw, 177.78vh)"
+                  width="3840"
+                  height="2160"
+                  alt="" decoding="async"
+                />
+              </picture>
+            </div>
             <div
               class="original-layer original-layers__front"
               data-original-layer="near"
               aria-hidden="true"
-            ></div>
+            >
+              <picture>
+                <source
+                  media="(max-aspect-ratio: 3/4)"
+                  type="image/webp"
+                  srcset="img/layer-front-portrait-810.webp 810w, img/layer-front-portrait-1215.webp 1215w, img/layer-front-portrait-1620.webp 1620w"
+                  sizes="75vh"
+                />
+                <img
+                  src="img/layer-front-1920.webp"
+                  srcset="img/layer-front-1280.webp 1280w, img/layer-front-1920.webp 1920w, img/layer-front-2560.webp 2560w, img/layer-front-3840.webp 3840w"
+                  sizes="max(100vw, 177.78vh)"
+                  width="3840"
+                  height="2160"
+                  alt="" decoding="async"
+                />
+              </picture>
+            </div>
           </div>
         </header>
 
@@ -214,13 +270,13 @@
 
             <div class="xray__stage" aria-hidden="true" data-xray-stage>
               <div class="xray__layer xray__layer--far" data-xray-layer="far">
-                <img src="img/layer-base.png" alt="" decoding="async" />
+                <img src="img/layer-base-1920.webp" srcset="img/layer-base-1280.webp 1280w, img/layer-base-1920.webp 1920w, img/layer-base-2560.webp 2560w, img/layer-base-3840.webp 3840w" sizes="(max-width: 900px) 80vw, min(54vw, 760px)" width="3840" height="2160" alt="" loading="lazy" decoding="async" />
               </div>
               <div class="xray__layer xray__layer--mid" data-xray-layer="mid">
-                <img src="img/layer-middle.png" alt="" decoding="async" />
+                <img src="img/layer-middle-1920.webp" srcset="img/layer-middle-1280.webp 1280w, img/layer-middle-1920.webp 1920w, img/layer-middle-2560.webp 2560w, img/layer-middle-3840.webp 3840w" sizes="(max-width: 900px) 80vw, min(54vw, 760px)" width="3840" height="2160" alt="" loading="lazy" decoding="async" />
               </div>
               <div class="xray__layer xray__layer--near" data-xray-layer="near">
-                <img src="img/layer-front.png" alt="" decoding="async" />
+                <img src="img/layer-front-1920.webp" srcset="img/layer-front-1280.webp 1280w, img/layer-front-1920.webp 1920w, img/layer-front-2560.webp 2560w, img/layer-front-3840.webp 3840w" sizes="(max-width: 900px) 80vw, min(54vw, 760px)" width="3840" height="2160" alt="" loading="lazy" decoding="async" />
               </div>
               <div class="xray__axis"></div>
             </div>
@@ -272,7 +328,7 @@
         <section id="night" class="scene scene--night narrative" aria-labelledby="rhythm-title" data-scene="night" data-scene-label="Rhythm">
           <img
             class="night-image"
-            src="img/dungeon.jpg"
+            src="img/dungeon-1920.webp"
             alt=""
             loading="lazy"
             decoding="async"

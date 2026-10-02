@@ -198,11 +198,19 @@ a {
   bottom: calc(var(--original-index) * -4.5);
   width: 100%;
   height: calc(var(--original-index) * 10);
-  background-image: url("../img/ground.png");
+  background-image: url("../img/ground-1920.webp");
+  background-image: image-set(url("../img/ground-1920.webp") 1x, url("../img/ground-2560.webp") 2x);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   pointer-events: none;
+}
+
+@media (min-width: 801px) {
+  .original-main-header::after {
+    background-image: url("../img/ground-2560.webp");
+    background-image: image-set(url("../img/ground-2560.webp") 1x, url("../img/ground-3840.webp") 2x);
+  }
 }
 
 .original-layers {
@@ -219,27 +227,35 @@ a {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-position: center;
-  background-size: cover;
   will-change: transform;
   transition: transform 0.75s cubic-bezier(0.075, 0.5, 0, 1);
 }
 
+.original-layer picture,
+.original-layer img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.original-layer img {
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+}
+
 .original-layers__base {
   z-index: 0;
-  background-image: url("../img/layer-base.png");
   transform: translate3d(0, calc(var(--original-scroll) / 1.6), 0);
 }
 
 .original-layers__middle {
   z-index: 2;
-  background-image: url("../img/layer-middle.png");
   transform: translate3d(0, calc(var(--original-scroll) / 2.5), 0);
 }
 
 .original-layers__front {
   z-index: 3;
-  background-image: url("../img/layer-front.png");
   transform: translate3d(0, calc(var(--original-scroll) / 5.7), 0);
 }
 
@@ -276,7 +292,7 @@ a {
   min-height: 100vh;
   align-items: center;
   justify-content: center;
-  background-image: url("../img/dungeon.jpg");
+  background-image: url("../img/dungeon-1920.webp");
   background-position: center;
   background-size: cover;
   color: #e7e7e0;
@@ -314,6 +330,16 @@ a {
   letter-spacing: calc(var(--original-index) / 37.5);
 }
 
+.eyebrow,
+.kicker,
+.section-index {
+  color: var(--sage);
+  font-size: clamp(0.68rem, 0.9vw, 0.8rem);
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
 .extension-intro {
   position: relative;
   display: grid;
@@ -341,7 +367,7 @@ a {
   height: 42%;
   background:
     linear-gradient(180deg, rgb(1 1 1 / 24%), #07110f 94%),
-    url("../img/dungeon.jpg") center 58% / cover no-repeat;
+    url("../img/dungeon-1920.webp") center 58% / cover no-repeat;
   opacity: 0.34;
   pointer-events: none;
 }
@@ -1665,6 +1691,10 @@ html[data-motion="reduced"] .xray__layer {
 .system-node--model {
   border-color: rgb(124 227 189 / 32%);
   box-shadow: inset 0 0 42px rgb(124 227 189 / 4%);
+}
+
+.system-node--signal {
+  border-color: rgb(231 200 121 / 22%);
 }
 
 .system-node--output {
