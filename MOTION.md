@@ -1,108 +1,49 @@
-# Motion system
+# Motion
 
-## Two motion contracts
+## The 2023 contract
 
-Nordic Depths intentionally does not force the 2023 original and the modern extension through one abstraction.
+The original forest moves each plane by a fixed divisor of the scroll position, exactly as the 2023 exercise did:
 
-## 1. Preserved original
+| Element | Transform |
+| --- | --- |
+| Far plane | `scroll / 1.6` |
+| Middle plane | `scroll / 2.5` |
+| Near plane | `scroll / 5.7` |
+| Title block | `scroll / 2` |
+| Dungeon copy | `scroll / -7.5` |
 
-The original forest uses the historical CSS ratios from the 2023 repository.
+`original-parallax.js` supplies the scroll value; CSS applies the divisors with the original 0.75s easing. The static checks keep the divisors literal and the browser tests measure them.
 
-```text
-far/base       scrollTop / 1.6
-middle         scrollTop / 2.5
-near/front     scrollTop / 5.7
-hero copy      scrollTop / 2
-dungeon copy   scrollTop / -7.5
-```
+The 2023 ScrollSmoother runtime is not used. Native scrolling moves the page immediately and the planes catch up through the easing, so the motion is slightly springier than the original's smoothed scroll.
 
-These values are literal product requirements.
+The title is now longer than the 2023 text, so its block rests with its last line just above the forest line, inside the clearing between the two big trunks. That makes it fully readable on arrival on every screen, and it still sinks behind the foliage as the page scrolls. The divisors are unchanged.
 
-`original-parallax.js` only supplies the scoped `--original-scroll` value from native browser scroll. CSS performs the same transforms the original project used.
+Under `prefers-reduced-motion: reduce` the scroll value stays at `0px` and the transforms are removed. Motion Lab cannot change this part.
 
-The old ScrollSmoother runtime is intentionally not restored. Native browser scroll provides the position directly, while the original 0.75s transform transition retains the characteristic eased response.
+## The continuation
 
-### Reduced motion
+The motion profile comes from `motion-model.js`:
 
-When `prefers-reduced-motion: reduce` matches:
+| Profile | When | Effect |
+| --- | --- | --- |
+| Full | fine pointer | all scenes, 38px reveals, pointer glow |
+| Compact | coarse pointer | gentler X-Ray tilt, 22px reveals, no pointer glow |
+| Reduced | reduced-motion preference | no scroll choreography, no CSS drift or twinkle, no smooth scrolling |
 
-- `--original-scroll` remains `0px`;
-- original spatial transforms are neutralized by CSS;
-- all original text remains available.
+Motion Lab can force any profile for the continuation. Choosing Reduced there also stops the motion CSS owns (aurora drift, mist drift, star twinkle).
 
-Motion Lab cannot override this historical subsystem.
+## Scenes
 
-## 2. Nordic Depths extension
+- **Handoff**: the dungeon backdrop settles and darkens as the intro arrives, and the title rises line by line out of masks. The gold eyebrow echoes the 2023 title glow.
+- **X-Ray**: the same three forest images, as transparent planes, compose the hero image; then the stack tilts into 3D, the planes separate and their divisor tags appear; it orbits slightly and recomposes. On wide screens the stage is sticky for the length of the section; on narrow or short screens it animates as it passes. Without motion it shows a still exploded view.
+- **Focus**: slow mist drift behind the text.
+- **Rhythm**: two dark shutters slide apart like doors as the scene arrives, and the cave light comes up; the night image drifts with scroll.
+- **Structure**: architecture nodes and connectors reveal once.
+- **Outcome**: aurora ribbons build with scroll while drifting in CSS; a layer of stars twinkles.
+- **Intro glow**: on fine pointers, two soft lights ease towards the pointer (about ±90px); idle when the intro is off screen.
 
-### Full
+## Constraints
 
-Fine pointer + normal system motion:
-
-- complete extension choreography;
-- 38px maximum reveal distance;
-- pointer glow enabled;
-- full bounded intensity.
-
-### Compact
-
-Coarse pointer:
-
-- intensity reduced to 58%;
-- reveal distance reduced to 22px;
-- pointer glow disabled.
-
-### Reduced
-
-Reduced-motion preference:
-
-- extension spatial choreography disabled;
-- pointer glow disabled;
-- semantic reading order unchanged.
-
-Motion Lab can explicitly inspect extension profiles, but those overrides never alter the preserved original.
-
-## X-Ray
-
-The X-Ray scene uses the same three forest assets and labels their historical divisors:
-
-- Far — `÷1.6`
-- Middle — `÷2.5`
-- Near — `÷5.7`
-
-The scene then separates and recomposes those layers using transform/opacity-only GSAP choreography.
-
-## Night
-
-Night uses transform/opacity-only drift and shutters. It remains secondary to scroll and never becomes a custom scroll source.
-
-## System
-
-The System scene visualizes the **extension** dependency chain:
-
-```text
-system + Motion Lab preferences
-            ↓
-      pure motion profile
-            ↓
-   GSAP / pointer adapters
-            ↓
-        semantic DOM
-```
-
-It does not describe or mutate the historical subsystem.
-
-## Aurora
-
-Aurora uses CSS drift plus ScrollTrigger-controlled opacity build. The two systems do not compete over the same transform property.
-
-## Cleanup
-
-Every modern adapter returns cleanup. The preserved original adapter also has explicit cleanup.
-
-This prevents duplicate listeners when system preferences or Motion Lab state change.
-
-## Constraint
-
-Native browser scrolling is authoritative everywhere.
-
-The project contains no runtime ScrollSmoother, no custom momentum layer, and no scroll hijacking.
+- Native scrolling is the only scroll source: no smooth-scroll library, no scroll hijacking.
+- Scroll-linked motion animates `transform` and `opacity` (the X-Ray drives its transforms through CSS variables).
+- Every adapter returns a cleanup function, and the scroll scenes live in one GSAP context, so profile changes never stack listeners or tweens.
