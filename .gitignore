@@ -1,0 +1,8 @@
+node_modules/
+_site/
+test-results/
+playwright-report/
+blob-report/
+visual-artifacts/
+.DS_Store
+playwright.local.config.js

@@ -4,10 +4,12 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 concurrency:
-  group: quality-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: quality-${{ github.event.pull_request.number || github.ref }}
+  # Superseded PR runs are cancelled; a run on main is never cut off mid-deploy.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -20,8 +22,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - run: npm install --ignore-scripts
+          cache: npm
+      - run: npm ci --ignore-scripts
       - run: npm run check
+      - run: npm run build
 
   browser:
     runs-on: ubuntu-latest
@@ -30,7 +34,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - run: npm install --ignore-scripts
+          cache: npm
+      - run: npm ci --ignore-scripts
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:e2e
       - name: Upload visual preview
@@ -41,3 +46,32 @@ jobs:
           path: visual-artifacts/*.png
           if-no-files-found: warn
           retention-days: 7
+
+  deploy:
+    # Only a green main reaches GitHub Pages, and only the built site is published.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [static, browser]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: node scripts/build-site.mjs
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
