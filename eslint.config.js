@@ -3,7 +3,7 @@ import globals from "globals";
 
 export default [
   {
-    ignores: ["libs/**"],
+    ignores: ["libs/**", "_site/**", "playwright.local.config.js", "test-results/**", "playwright-report/**", "visual-artifacts/**"],
   },
   js.configs.recommended,
   {

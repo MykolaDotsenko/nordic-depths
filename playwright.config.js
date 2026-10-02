@@ -12,7 +12,8 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   webServer: {
-    command: "node scripts/serve.mjs",
+    // Tests run against the same _site/ build that GitHub Pages publishes.
+    command: "node scripts/build-site.mjs --quiet && node scripts/serve.mjs _site",
     url: "http://127.0.0.1:4173",
     reuseExistingServer: !process.env.CI,
   },

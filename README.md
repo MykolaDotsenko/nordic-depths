@@ -2,100 +2,40 @@
 
 [![Quality](https://github.com/MykolaDotsenko/nordic-depths/actions/workflows/quality.yml/badge.svg)](https://github.com/MykolaDotsenko/nordic-depths/actions/workflows/quality.yml)
 
-**A 2023 layered parallax exercise preserved at the top of the page, followed by a modern extension that turns the same visual idea into a tested motion system.**
+Mykola Dotsenko's portfolio. A 2023 layered-forest parallax exercise stays at the top of the page, and the continuation turns the same idea of clear layers into a story about interface craft, motion and software structure.
 
-[**Open Nordic Depths →**](https://mykoladotsenko.github.io/nordic-depths/) · [Architecture](./ARCHITECTURE.md) · [Motion notes](./MOTION.md)
+[**Open the site (FI)**](https://mykoladotsenko.github.io/nordic-depths/) · [In English](https://mykoladotsenko.github.io/nordic-depths/?lang=en) · [Architecture](./ARCHITECTURE.md) · [Motion notes](./MOTION.md)
 
-## Why the original is still there
+## What is on the page
 
-I did not replace the old forest/dungeon exercise with a completely new portfolio page.
+- **The 2023 original**: the forest and the dungeon, with the exercise's parallax divisors kept exactly (see [MOTION.md](./MOTION.md)). The title is placed so it is readable on arrival and then sinks behind the trees.
+- **The continuation**: Idea → Layers → Focus → Rhythm → Craft → Structure → Outcome, ending in a contact block (LinkedIn, GitHub).
+- **X-Ray**: the three forest planes compose the hero image, separate into a 3D stack labelled with their divisors, then recompose.
+- **Motion Lab**: switch the continuation between full, compact and reduced motion, with live telemetry.
+- **Finnish and English**: Finnish by default; the FI/EN switch is visible from the first screen, and `?lang=en` opens English directly.
 
-The first two screens preserve the original composition and its distinctive parallax ratios:
+## Accessibility and performance
 
-| Plane | Transform |
-| --- | --- |
-| Far/base | `scrollTop / 1.6` |
-| Middle | `scrollTop / 2.5` |
-| Near/front | `scrollTop / 5.7` |
-| Hero copy | `scrollTop / 2` |
-| Dungeon copy | `scrollTop / -7.5` |
+- Reduced motion freezes the 2023 parallax and stops all continuation motion; Motion Lab's "Reduced" does the same for the continuation.
+- Skip link, visible focus, keyboard-reachable chrome, correct `lang`, forced-colors styles; axe runs in CI for both languages.
+- Artwork ships as responsive WebP (with portrait crops for phones). First load is about 0.6–0.8 MB instead of the original 6 MB.
 
-Those values are now regression-tested so the repository can evolve without erasing what the original project actually was.
+## Run and verify
 
-## The extension
-
-After the preserved sequence, the page introduces:
-
-- layer anatomy / X-Ray view;
-- native-anchor Scene Compass;
-- Motion Lab preferences;
-- full, compact and reduced motion profiles;
-- night/aurora choreography;
-- pointer depth;
-- accessible focus/reduced-motion/forced-colors states.
-
-The modern controls stay hidden while the original 2023 sequence is playing.
-
-## Motion ownership
-
-The old and new parts deliberately do not share one animation engine.
-
-```text
-PRESERVED ORIGINAL
-native scroll
-   ↓
-original-parallax.js
-   ↓
-CSS variables / original ratios
-
-MODERN EXTENSION
-system preferences + Motion Lab
-   ↓
-motion model
-   ├── GSAP scenes
-   └── pointer depth
+```bash
+npm install
+npm run dev          # http://127.0.0.1:4173
+npm run check        # static checks, ESLint, unit tests
+npx playwright install
+npm run test:e2e     # Chromium, Firefox, WebKit and mobile Chromium against the _site build
 ```
 
-The old ScrollSmoother dependency was not brought back. Native scrolling remains authoritative.
+`npm run build` writes the deployable site to `_site/` and fails on any missing or unreferenced file. `npm run images` regenerates the WebP files from `img/source/` (needs ImageMagick), and `node scripts/capture-assets.mjs` re-renders the social preview image and the icons.
 
 ## Stack
 
-- semantic HTML
-- modern CSS
-- Vanilla JavaScript / native modules
-- GSAP + ScrollTrigger for the extension
-- native browser scrolling
-- original PNG/JPEG artwork
-- Playwright / axe / GitHub Actions
-
-No React, Three.js, UI kit or application-state framework.
-
-## Accessibility
-
-Reduced-motion freezes the historical parallax and disables spatial extension motion.
-
-The project also includes skip navigation, visible focus, semantic reading order, forced-colors fallback and automated axe checks.
-
-## Verification
-
-```bash
-npm install
-npm run check
-npx playwright install
-npm run test:e2e
-```
-
-Tests protect the historical ratios, actual far/middle/near movement order, reduced-motion behaviour, navigation, Motion Lab persistence, overflow and critical accessibility states.
-
-## Run locally
-
-```bash
-npm install
-npm run dev
-```
-
-Open `http://127.0.0.1:4173`.
+Semantic HTML, modern CSS and plain JavaScript modules; GSAP + ScrollTrigger for the continuation's scroll choreography; Playwright, axe and GitHub Actions for verification. No framework, no bundler, native scrolling throughout.
 
 ## History
 
-The repository began in September 2023 as a compact layered-forest parallax exercise with Finnish personal copy. Keeping that first version visible is intentional: the repo shows the progression from an early visual experiment to a more disciplined motion implementation instead of rewriting the past.
+The repository began in September 2023 as a small parallax exercise with Finnish copy. The first screens are kept on purpose: the page shows how that experiment grew into a tested, accessible piece of front-end engineering instead of hiding where it started.

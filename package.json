@@ -1,11 +1,13 @@
 {
   "name": "nordic-depths",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": true,
   "type": "module",
-  "description": "Accessible cinematic scroll experience built with semantic HTML, modern CSS, Vanilla JavaScript, and GSAP.",
+  "description": "Bilingual portfolio that keeps a 2023 layered parallax and grows it into an accessible, tested motion story.",
   "scripts": {
     "dev": "node scripts/serve.mjs",
+    "build": "node scripts/build-site.mjs",
+    "images": "node scripts/build-images.mjs",
     "lint": "eslint . --max-warnings=0",
     "test": "node --test tests/*.test.js",
     "test:e2e": "playwright test",
