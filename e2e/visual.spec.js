@@ -1,8 +1,11 @@
+// Captures review screenshots into visual-artifacts/ (uploaded by CI).
+// Behaviour is asserted in the other specs; this file only records what the page looks like.
 import { mkdir } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
+import { scrollToY, waitForSettledParallax } from "./helpers.js";
 
-async function decodeImages(page, selector) {
-  await page.locator(selector).evaluateAll(async (images) => {
+async function decodeImages(page) {
+  await page.locator("img").evaluateAll(async (images) => {
     await Promise.all(
       images.map(async (image) => {
         if (!image.complete) {
@@ -14,12 +17,11 @@ async function decodeImages(page, selector) {
             new Promise((resolve) => setTimeout(resolve, 2500)),
           ]);
         }
-
         if (image.complete && image.naturalWidth > 0) {
           try {
             await image.decode();
           } catch {
-            // A loaded image may reject decode(); capture can still continue.
+            // A loaded image may reject decode(); the capture can continue.
           }
         }
       }),
@@ -27,117 +29,83 @@ async function decodeImages(page, selector) {
   });
 }
 
-async function captureScene(page, selector, path) {
-  const scene = page.locator(selector);
-  await scene.scrollIntoViewIfNeeded();
-  await decodeImages(page, `${selector} img`);
-  await page.waitForTimeout(500);
+async function capture(page, selector, path, { align = "start" } = {}) {
+  await page.locator(selector).evaluate((element, block) => {
+    document.documentElement.style.scrollBehavior = "auto";
+    element.scrollIntoView({ block });
+  }, align);
+  await decodeImages(page);
+  await page.waitForTimeout(900);
   await page.screenshot({ path, fullPage: false });
-}
-
-async function preloadOriginalArtwork(page) {
-  await page.evaluate(async () => {
-    const sources = [
-      "img/layer-base.png",
-      "img/layer-middle.png",
-      "img/layer-front.png",
-      "img/ground.png",
-      "img/dungeon.jpg",
-    ];
-
-    await Promise.all(
-      sources.map(
-        (src) =>
-          new Promise((resolve) => {
-            const image = new Image();
-            image.onload = resolve;
-            image.onerror = resolve;
-            image.src = src;
-          }),
-      ),
-    );
-  });
-}
-
-async function warmLazyImages(page) {
-  const lazyImages = page.locator('img[loading="lazy"]');
-  const count = await lazyImages.count();
-
-  for (let index = 0; index < count; index += 1) {
-    const image = lazyImages.nth(index);
-    await image.scrollIntoViewIfNeeded();
-    await decodeImages(page, 'img[loading="lazy"]');
-  }
-
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await page.waitForTimeout(180);
 }
 
 test("capture visual preview", async ({ page }, testInfo) => {
   const isDesktop = testInfo.project.name === "chromium";
   const isMobile = testInfo.project.name === "mobile-chromium";
-
   test.skip(!isDesktop && !isMobile, "Representative desktop/mobile render only");
+  test.setTimeout(120_000);
 
   await mkdir("visual-artifacts", { recursive: true });
-
   const prefix = isMobile ? "mobile" : "desktop";
+  const out = (name) => `visual-artifacts/${prefix}-${name}.png`;
 
   await page.goto("/");
-  await preloadOriginalArtwork(page);
-  await expect(page.getByRole("heading", { level: 1, name: /rakennan toimivia digitaalisia tuotteita/i })).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  await decodeImages(page);
+  await waitForSettledParallax(page);
+  await page.screenshot({ path: out("01-original-forest") });
 
-  await page.screenshot({
-    path: `visual-artifacts/${prefix}-original-forest.png`,
-    fullPage: false,
+  const viewportHeight = await page.evaluate(() => window.innerHeight);
+  await scrollToY(page, Math.round(viewportHeight * 0.45));
+  await waitForSettledParallax(page);
+  await page.screenshot({ path: out("02-original-sinking") });
+
+  await capture(page, "#original-dungeon", out("03-original-dungeon"));
+  await capture(page, "#extension", out("04-intro"));
+
+  await expect(page.locator("body")).toHaveClass(/extension-active/);
+  await page.getByRole("button", { name: "Motion Lab" }).click();
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: out("05-motion-lab") });
+  await page.keyboard.press("Escape");
+
+  const xray = await page.evaluate(() => {
+    const section = document.querySelector("#xray");
+    return { top: section.getBoundingClientRect().top + window.scrollY, height: section.offsetHeight };
   });
-
-  if (isDesktop) {
-    const targetScroll = await page.evaluate(() => Math.min(460, window.innerHeight * 0.58));
-    await page.evaluate((distance) => {
-      document.documentElement.style.scrollBehavior = "auto";
-      window.scrollTo(0, distance);
-    }, targetScroll);
-    await page.waitForFunction(() => {
-      const value = document
-        .querySelector("[data-original-experience]")
-        ?.style.getPropertyValue("--original-scroll");
-      return Number.parseFloat(value || "0") > 100;
-    });
-    await page.waitForTimeout(900);
-    await page.screenshot({
-      path: "visual-artifacts/desktop-original-parallax-mid.png",
-      fullPage: false,
-    });
-    await page.evaluate(() => window.scrollTo(0, 0));
+  const sticky = await page.evaluate(() => window.matchMedia("(min-width: 901px) and (min-height: 621px)").matches);
+  if (sticky) {
+    for (const [name, progress] of [
+      ["06-xray-composed", 0],
+      ["07-xray-exploded", 0.5],
+    ]) {
+      await scrollToY(page, Math.round(xray.top + progress * (xray.height - viewportHeight)));
+      await decodeImages(page);
+      await page.waitForTimeout(1200);
+      await page.screenshot({ path: out(name) });
+    }
+  } else {
+    await capture(page, "[data-xray-stage]", out("07-xray-exploded"), { align: "center" });
   }
 
-  await captureScene(page, "#original-dungeon", `visual-artifacts/${prefix}-original-dungeon.png`);
-  await captureScene(page, "#extension", `visual-artifacts/${prefix}-extension.png`);
+  await capture(page, "#mist", out("08-focus"));
+  await capture(page, "#night", out("09-rhythm"));
+  await capture(page, "#principles", out("10-craft"));
+  await capture(page, "#system", out("11-structure"));
+  await capture(page, "#aurora", out("12-outcome"));
+  await capture(page, "#contact", out("13-contact"), { align: "center" });
 
-  await page.waitForFunction(() => document.body.classList.contains("extension-active"));
-  await page.getByRole("button", { name: "Motion Lab" }).click();
-  await page.waitForTimeout(180);
-  await page.screenshot({
-    path: `visual-artifacts/${prefix}-motion-lab.png`,
-    fullPage: false,
-  });
-  await page.getByRole("button", { name: "Close Motion Lab" }).click();
-
-  await captureScene(page, "#xray", `visual-artifacts/${prefix}-xray.png`);
-  await captureScene(page, "#mist", `visual-artifacts/${prefix}-depth.png`);
-  await captureScene(page, '[data-scene="night"]', `visual-artifacts/${prefix}-night.png`);
-  await captureScene(page, "#principles", `visual-artifacts/${prefix}-principles.png`);
-  await captureScene(page, "#system", `visual-artifacts/${prefix}-system.png`);
-  await captureScene(page, '[data-scene="aurora"]', `visual-artifacts/${prefix}-aurora.png`);
+  await page.goto("/?lang=en");
+  await page.evaluate(() => document.fonts.ready);
+  await decodeImages(page);
+  await waitForSettledParallax(page);
+  await page.screenshot({ path: out("14-english-forest") });
 
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.reload();
-  await preloadOriginalArtwork(page);
-  await warmLazyImages(page);
-
-  await page.screenshot({
-    path: `visual-artifacts/${prefix}-full-static.png`,
-    fullPage: true,
-  });
+  await page.goto("/");
+  await page.evaluate(() => document.fonts.ready);
+  for (const image of await page.locator('img[loading="lazy"]').all()) await image.scrollIntoViewIfNeeded();
+  await decodeImages(page);
+  await scrollToY(page, 0);
+  await page.screenshot({ path: out("15-full-static"), fullPage: true });
 });
