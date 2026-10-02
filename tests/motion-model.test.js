@@ -56,6 +56,22 @@ test("scroll velocity follows movement and decays to zero at rest", () => {
   assert.equal(velocity, 0);
 });
 
+test("velocity settles the same however often frames arrive", () => {
+  const settle = (frameMs) => {
+    let velocity = 3750;
+    let elapsed = 0;
+    while (velocity !== 0 && elapsed < 5000) {
+      velocity = smoothVelocity(velocity, 0, frameMs);
+      elapsed += frameMs;
+    }
+    return elapsed;
+  };
+  // 120 Hz, 60 Hz and a throttled tab all come to rest within about 0.6 s.
+  for (const frameMs of [8, 16, 250, 600]) {
+    assert.ok(settle(frameMs) <= 1200, `${frameMs} ms frames settled after ${settle(frameMs)} ms`);
+  }
+});
+
 test("velocity guards against zero elapsed time", () => {
   assert.ok(Number.isFinite(smoothVelocity(0, 40, 0)));
 });

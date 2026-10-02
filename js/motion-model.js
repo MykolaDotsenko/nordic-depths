@@ -48,11 +48,14 @@ export function getMotionProfile({
   });
 }
 
-// Exponentially smoothed scroll velocity in px/s. Sampled every animation frame,
-// so a resting page (deltaY = 0) decays towards zero instead of freezing.
-export function smoothVelocity(previous, deltaY, elapsedMs, factor = 0.2) {
-  const raw = (deltaY / Math.max(elapsedMs, 1)) * 1000;
-  const next = previous + (raw - previous) * factor;
+// Exponentially smoothed scroll velocity in px/s. The blend depends on elapsed
+// time, not on the frame count, so it settles the same at 60 Hz, 120 Hz or when
+// the browser delivers frames rarely; a resting page decays towards zero.
+export function smoothVelocity(previous, deltaY, elapsedMs, timeConstantMs = 60) {
+  const elapsed = Math.max(elapsedMs, 1);
+  const raw = (deltaY / elapsed) * 1000;
+  const blend = 1 - Math.exp(-elapsed / timeConstantMs);
+  const next = previous + (raw - previous) * blend;
   return Math.abs(next) < 0.5 ? 0 : next;
 }
 
