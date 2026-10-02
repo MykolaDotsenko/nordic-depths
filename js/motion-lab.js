@@ -1,11 +1,20 @@
+import { formatVelocity, smoothVelocity } from "./motion-model.js";
 import {
   DEFAULT_MOTION_PREFERENCES,
   normalizeMotionPreferences,
 } from "./motion-preferences.js";
 
+const PROFILE_KEYS = {
+  system: "profileSystem",
+  full: "profileFull",
+  compact: "profileCompact",
+  reduced: "profileReduced",
+};
+
 export function initMotionLab({
   preferences = DEFAULT_MOTION_PREFERENCES,
   systemReduced = false,
+  t = (key) => key,
   onPreferencesChange = () => {},
 } = {}) {
   const toggle = document.querySelector("[data-motion-lab-toggle]");
@@ -13,6 +22,7 @@ export function initMotionLab({
   if (!toggle || !dialog || typeof dialog.showModal !== "function") {
     return {
       cleanup: () => {},
+      refresh: () => {},
       setProfile: () => {},
       setScene: () => {},
       setSystemReduced: () => {},
@@ -30,9 +40,12 @@ export function initMotionLab({
   const velocityReadout = dialog.querySelector("[data-velocity-readout]");
 
   let current = normalizeMotionPreferences(preferences);
-  let lastY = window.scrollY;
-  let lastTime = performance.now();
-  let smoothedVelocity = 0;
+  let profileMode = "full";
+  let reducedBySystem = systemReduced;
+  let sceneLabel = "";
+  let velocity = 0;
+  let lastY = 0;
+  let lastTime = 0;
   let velocityFrame = 0;
 
   const syncControls = () => {
@@ -44,22 +57,56 @@ export function initMotionLab({
     if (depthOutput) depthOutput.value = `${Math.round(current.depthScale * 100)}%`;
   };
 
+  const render = () => {
+    if (profileReadout) profileReadout.textContent = t(PROFILE_KEYS[profileMode] ?? "profileFull");
+    if (systemReadout) systemReadout.textContent = t(reducedBySystem ? "stateOn" : "stateOff");
+    if (sceneReadout && sceneLabel) sceneReadout.textContent = sceneLabel;
+  };
+
   const apply = (next) => {
     current = normalizeMotionPreferences({ ...current, ...next });
     syncControls();
     onPreferencesChange(current);
   };
 
+  // Velocity is sampled every frame while the panel is open, so it settles
+  // back to 0 px/s when scrolling stops.
+  const sampleVelocity = (now) => {
+    const y = window.scrollY;
+    velocity = smoothVelocity(velocity, y - lastY, now - lastTime);
+    lastY = y;
+    lastTime = now;
+    if (velocityReadout) {
+      const text = formatVelocity(velocity);
+      if (velocityReadout.textContent !== text) velocityReadout.textContent = text;
+    }
+    velocityFrame = window.requestAnimationFrame(sampleVelocity);
+  };
+
+  const startVelocity = () => {
+    velocity = 0;
+    lastY = window.scrollY;
+    lastTime = performance.now();
+    if (!velocityFrame) velocityFrame = window.requestAnimationFrame(sampleVelocity);
+  };
+
+  const stopVelocity = () => {
+    if (velocityFrame) window.cancelAnimationFrame(velocityFrame);
+    velocityFrame = 0;
+  };
+
   const openDialog = () => {
     dialog.hidden = false;
     dialog.showModal();
     toggle.setAttribute("aria-expanded", "true");
+    startVelocity();
   };
 
   const closeDialog = () => dialog.close();
 
   const onDialogClose = () => {
     toggle.setAttribute("aria-expanded", "false");
+    stopVelocity();
   };
 
   const onRadioChange = (event) => {
@@ -78,29 +125,10 @@ export function initMotionLab({
 
   const onReset = () => apply(DEFAULT_MOTION_PREFERENCES);
 
-  const updateVelocity = () => {
-    velocityFrame = 0;
-    const now = performance.now();
-    const elapsed = Math.max(16, now - lastTime);
-    const raw = ((window.scrollY - lastY) / elapsed) * 1000;
-    smoothedVelocity += (raw - smoothedVelocity) * 0.28;
-    lastY = window.scrollY;
-    lastTime = now;
-
-    if (velocityReadout) {
-      const rounded = Math.round(smoothedVelocity);
-      velocityReadout.textContent = `${rounded > 0 ? "+" : ""}${rounded} px/s`;
-    }
-  };
-
-  const onScroll = () => {
-    if (!velocityFrame) velocityFrame = window.requestAnimationFrame(updateVelocity);
-  };
-
   toggle.hidden = false;
   dialog.hidden = false;
   syncControls();
-  if (systemReadout) systemReadout.textContent = systemReduced ? "On" : "Off";
+  render();
 
   toggle.addEventListener("click", openDialog);
   close?.addEventListener("click", closeDialog);
@@ -109,7 +137,6 @@ export function initMotionLab({
   radios.forEach((radio) => radio.addEventListener("change", onRadioChange));
   depth?.addEventListener("input", onDepthInput);
   depth?.addEventListener("change", onDepthChange);
-  window.addEventListener("scroll", onScroll, { passive: true });
 
   return {
     cleanup() {
@@ -120,21 +147,21 @@ export function initMotionLab({
       radios.forEach((radio) => radio.removeEventListener("change", onRadioChange));
       depth?.removeEventListener("input", onDepthInput);
       depth?.removeEventListener("change", onDepthChange);
-      window.removeEventListener("scroll", onScroll);
-      if (velocityFrame) window.cancelAnimationFrame(velocityFrame);
+      stopVelocity();
       if (dialog.open) dialog.close();
     },
+    refresh: render,
     setProfile(profile) {
-      if (profileReadout) {
-        profileReadout.textContent =
-          profile.mode.charAt(0).toUpperCase() + profile.mode.slice(1);
-      }
+      profileMode = profile.mode;
+      render();
     },
-    setScene(scene) {
-      if (sceneReadout) sceneReadout.textContent = scene;
+    setScene(label) {
+      sceneLabel = label;
+      render();
     },
     setSystemReduced(reduced) {
-      if (systemReadout) systemReadout.textContent = reduced ? "On" : "Off";
+      reducedBySystem = reduced;
+      render();
     },
   };
 }

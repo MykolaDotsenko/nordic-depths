@@ -20,6 +20,7 @@ try {
   const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
   await page.goto(`http://127.0.0.1:${port}/`, { waitUntil: "load" });
   await page.evaluate(() => document.fonts.ready);
+  await page.addStyleTag({ content: "[data-lang-switch] { display: none !important; }" });
   await sleep(400);
   await page.screenshot({ path: "img/og-image.jpg", type: "jpeg", quality: 84 });
 

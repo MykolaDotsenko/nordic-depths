@@ -1,156 +1,205 @@
 <!doctype html>
-<html lang="en">
+<html lang="fi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
+    <title>Mykola Dotsenko — ohjelmistokehittäjä Turusta · Nordic Depths</title>
     <meta
       name="description"
-      content="Nordic Depths begins with the original 2023 forest parallax and turns the same idea of clear layers into a continuous story about interface craft, motion, and software architecture."
+      content="Mykola Dotsenko rakentaa toimivia digitaalisia tuotteita Pythonilla, Djangolla, Reactilla ja TypeScriptillä. Portfolio alkaa vuoden 2023 parallaksimetsästä ja kasvaa tarinaksi selkeistä kerroksista."
     />
     <meta name="theme-color" content="#07110f" />
     <link rel="canonical" href="https://mykoladotsenko.github.io/nordic-depths/" />
 
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Nordic Depths — Accessible Cinematic Scroll Experience" />
+    <meta property="og:type" content="profile" />
+    <meta property="og:locale" content="fi_FI" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:title" content="Mykola Dotsenko — ohjelmistokehittäjä · Nordic Depths" />
     <meta
       property="og:description"
-      content="A layered forest experiment grows into a continuous story about focus, rhythm, craft, structure, and accessible motion."
+      content="Vuoden 2023 kerroksellinen metsä kasvaa tarinaksi fokuksesta, rytmistä, taidosta ja saavutettavasta liikkeestä."
     />
     <meta property="og:url" content="https://mykoladotsenko.github.io/nordic-depths/" />
-    <meta
-      property="og:image"
-      content="https://mykoladotsenko.github.io/nordic-depths/img/og-image.jpg"
-    />
+    <meta property="og:image" content="https://mykoladotsenko.github.io/nordic-depths/img/og-image.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Hämärä kerroksellinen metsä ja teksti Rakennan toimivia digitaalisia tuotteita" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://mykoladotsenko.github.io/nordic-depths/img/og-image.jpg" />
+
     <link rel="icon" href="img/icon.svg" type="image/svg+xml" />
     <link rel="icon" href="img/icon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="img/icon-180.png" />
 
-    <title>Nordic Depths — Accessible Cinematic Scroll Experience</title>
-
     <link rel="preload" href="fonts/raleway-regular.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="fonts/raleway-black.woff2" as="font" type="font/woff2" crossorigin />
-
     <link rel="stylesheet" href="css/main.css" />
 
+    <script>
+      // Runs before first paint: mark JS early and avoid a flash of Finnish text
+      // when English was requested (?lang=en or a stored choice).
+      (function () {
+        var root = document.documentElement;
+        root.classList.add("js");
+        try {
+          var param = new URLSearchParams(location.search).get("lang");
+          var stored = localStorage.getItem("nordic-depths:lang");
+          var lang = param === "en" || param === "fi" ? param : stored === "en" ? "en" : "fi";
+          if (lang === "en") {
+            root.lang = "en";
+            root.classList.add("i18n-pending");
+            setTimeout(function () {
+              if (root.classList.contains("i18n-pending")) {
+                root.classList.remove("i18n-pending");
+                root.lang = "fi";
+              }
+            }, 1500);
+          }
+        } catch (error) {
+          // Storage can be blocked; Finnish stays the default.
+        }
+      })();
+    </script>
     <script src="libs/gsap/gsap.min.js" defer></script>
     <script src="libs/gsap/ScrollTrigger.min.js" defer></script>
     <script type="module" src="js/app.js"></script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Mykola Dotsenko",
+        "jobTitle": "Software Developer",
+        "url": "https://mykoladotsenko.github.io/nordic-depths/",
+        "address": { "@type": "PostalAddress", "addressLocality": "Turku", "addressCountry": "FI" },
+        "knowsAbout": ["Python", "Django", "React", "TypeScript"],
+        "sameAs": ["https://www.linkedin.com/in/mykola-dotsenko/", "https://github.com/MykolaDotsenko"]
+      }
+    </script>
   </head>
 
   <body>
-    <a class="skip-link" href="#main-content">Skip to the continuation</a>
+    <a class="skip-link" href="#main-content" data-i18n="skip">Siirry sisältöön</a>
 
     <header class="site-header" data-header>
-      <a class="brand" href="#top" aria-label="Nordic Depths — back to top">
+      <a class="brand" href="#top" aria-label="Nordic Depths — takaisin alkuun" data-i18n-attr="aria-label:brandLabel">
         <span class="brand__mark" aria-hidden="true"></span>
-        <span>Nordic Depths</span>
+        <span class="brand__name">Nordic Depths</span>
       </a>
 
-      <nav class="site-nav" aria-label="Primary navigation">
-        <a href="#xray">Story</a>
-        <a href="#principles">Principles</a>
-        <a href="https://github.com/MykolaDotsenko/nordic-depths">Source</a>
+      <nav class="site-nav" aria-label="Päävalikko" data-i18n-attr="aria-label:navLabel">
+        <a href="#xray" data-i18n="navStory">Tarina</a>
+        <a href="#principles" data-i18n="navPrinciples">Periaatteet</a>
+        <a href="#contact" data-i18n="navContact">Yhteystiedot</a>
       </nav>
+
+      <div class="site-header__actions">
+        <div class="lang-switch" role="group" aria-label="Kieli / Language" data-lang-switch hidden>
+          <button type="button" lang="fi" data-lang-option="fi" aria-pressed="true">FI</button>
+          <button type="button" lang="en" data-lang-option="en" aria-pressed="false">EN</button>
+        </div>
+
+        <button
+          class="motion-lab-toggle"
+          type="button"
+          data-motion-lab-toggle
+          aria-haspopup="dialog"
+          aria-controls="motion-lab"
+          aria-expanded="false"
+          hidden
+        >
+          <span class="motion-lab-toggle__signal" aria-hidden="true"></span>
+          <span class="motion-lab-toggle__label">Motion Lab</span>
+        </button>
+      </div>
     </header>
 
-    <nav class="scene-compass" aria-label="Scene navigation">
-      <a class="scene-compass__link" href="#forest" data-scene-link="forest" aria-current="step"><span>01</span><strong>Original</strong></a>
-      <a class="scene-compass__link" href="#xray" data-scene-link="xray"><span>02</span><strong>Layers</strong></a>
-      <a class="scene-compass__link" href="#mist" data-scene-link="mist"><span>03</span><strong>Focus</strong></a>
-      <a class="scene-compass__link" href="#night" data-scene-link="night"><span>04</span><strong>Rhythm</strong></a>
-      <a class="scene-compass__link" href="#principles" data-scene-link="principles"><span>05</span><strong>Craft</strong></a>
-      <a class="scene-compass__link" href="#system" data-scene-link="system"><span>06</span><strong>Structure</strong></a>
-      <a class="scene-compass__link" href="#aurora" data-scene-link="aurora"><span>07</span><strong>Outcome</strong></a>
+    <nav class="scene-compass" aria-label="Kohtaukset" data-i18n-attr="aria-label:compassLabel">
+      <a class="scene-compass__link" href="#forest" data-scene-link="forest" aria-current="step"><span>01</span><strong data-i18n="sceneOrigin">Alku</strong></a>
+      <a class="scene-compass__link" href="#extension" data-scene-link="extension"><span>02</span><strong data-i18n="sceneIdea">Ajatus</strong></a>
+      <a class="scene-compass__link" href="#xray" data-scene-link="xray"><span>03</span><strong data-i18n="sceneLayers">Kerrokset</strong></a>
+      <a class="scene-compass__link" href="#mist" data-scene-link="mist"><span>04</span><strong data-i18n="sceneFocus">Fokus</strong></a>
+      <a class="scene-compass__link" href="#night" data-scene-link="night"><span>05</span><strong data-i18n="sceneRhythm">Rytmi</strong></a>
+      <a class="scene-compass__link" href="#principles" data-scene-link="principles"><span>06</span><strong data-i18n="sceneCraft">Taito</strong></a>
+      <a class="scene-compass__link" href="#system" data-scene-link="system"><span>07</span><strong data-i18n="sceneStructure">Rakenne</strong></a>
+      <a class="scene-compass__link" href="#aurora" data-scene-link="aurora"><span>08</span><strong data-i18n="sceneOutcome">Lopputulos</strong></a>
     </nav>
 
     <div class="scene-progress" aria-hidden="true">
       <span class="scene-progress__bar" data-document-progress></span>
     </div>
 
-    <button
-      class="motion-lab-toggle"
-      type="button"
-      data-motion-lab-toggle
-      aria-haspopup="dialog"
-      aria-controls="motion-lab"
-      aria-expanded="false"
-      hidden
-    >
-      <span class="motion-lab-toggle__signal" aria-hidden="true"></span>
-      Motion Lab
-    </button>
-
     <dialog id="motion-lab" class="motion-lab" aria-labelledby="motion-lab-title" data-motion-lab hidden>
       <div class="motion-lab__header">
         <div>
-          <p class="motion-lab__eyebrow">Live system controls</p>
+          <p class="motion-lab__eyebrow" data-i18n="labEyebrow">Liikkeen asetukset</p>
           <h2 id="motion-lab-title">Motion Lab</h2>
         </div>
-        <button class="motion-lab__close" type="button" data-motion-lab-close aria-label="Close Motion Lab">×</button>
+        <button
+          class="motion-lab__close"
+          type="button"
+          data-motion-lab-close
+          aria-label="Sulje Motion Lab"
+          data-i18n-attr="aria-label:labClose"
+        >
+          ×
+        </button>
       </div>
 
-      <p class="motion-lab__intro">
-        Explore how the same layered idea evolves below. Motion Lab changes the modern continuation while the original 2023 parallax remains preserved.
+      <p class="motion-lab__intro" data-i18n="labIntro">
+        Kokeile, miten sama kerroksellinen ajatus elää alempana. Motion Lab muuttaa vain uutta jatko-osaa – vuoden 2023 alkuperäinen parallaksi pysyy ennallaan.
       </p>
 
       <fieldset class="motion-lab__profiles">
-        <legend>Experience profile</legend>
-        <label><input type="radio" name="motion-profile" value="system" /> <span>System</span></label>
-        <label><input type="radio" name="motion-profile" value="full" /> <span>Full</span></label>
-        <label><input type="radio" name="motion-profile" value="compact" /> <span>Compact</span></label>
-        <label><input type="radio" name="motion-profile" value="reduced" /> <span>Reduced</span></label>
+        <legend data-i18n="labProfile">Kokemusprofiili</legend>
+        <label><input type="radio" name="motion-profile" value="system" /> <span data-i18n="profileSystem">Järjestelmä</span></label>
+        <label><input type="radio" name="motion-profile" value="full" /> <span data-i18n="profileFull">Täysi</span></label>
+        <label><input type="radio" name="motion-profile" value="compact" /> <span data-i18n="profileCompact">Kevyt</span></label>
+        <label><input type="radio" name="motion-profile" value="reduced" /> <span data-i18n="profileReduced">Vähennetty</span></label>
       </fieldset>
 
       <div class="motion-lab__control">
         <label for="depth-scale">
-          <span>Extension intensity</span>
+          <span data-i18n="labIntensity">Jatko-osan voimakkuus</span>
           <output for="depth-scale" data-depth-output>100%</output>
         </label>
         <input id="depth-scale" data-depth-control type="range" min="50" max="125" step="5" value="100" />
       </div>
 
-      <dl class="motion-lab__telemetry" aria-label="Live motion telemetry">
-        <div><dt>Active profile</dt><dd data-profile-readout>Full</dd></div>
-        <div><dt>System reduce</dt><dd data-system-motion-readout>Off</dd></div>
-        <div><dt>Current scene</dt><dd data-scene-readout>Forest</dd></div>
-        <div><dt>Scroll velocity</dt><dd data-velocity-readout>0 px/s</dd></div>
+      <dl class="motion-lab__telemetry" aria-label="Liikkeen mittarit" data-i18n-attr="aria-label:labTelemetry">
+        <div><dt data-i18n="labActiveProfile">Aktiivinen profiili</dt><dd data-profile-readout>Täysi</dd></div>
+        <div><dt data-i18n="labSystemReduce">Järjestelmän vähennys</dt><dd data-system-motion-readout>Pois</dd></div>
+        <div><dt data-i18n="labScene">Nykyinen kohtaus</dt><dd data-scene-readout>Alku</dd></div>
+        <div><dt data-i18n="labVelocity">Vierityksen nopeus</dt><dd data-velocity-readout>0 px/s</dd></div>
       </dl>
 
       <div class="motion-lab__footer">
-        <button class="motion-lab__reset" type="button" data-motion-lab-reset>Reset to system</button>
-        <p>Preferences stay on this device.</p>
+        <button class="motion-lab__reset" type="button" data-motion-lab-reset data-i18n="labReset">Palauta järjestelmän asetus</button>
+        <p data-i18n="labStorage">Asetukset tallentuvat vain tälle laitteelle.</p>
       </div>
     </dialog>
 
-    <div id="top" class="page-shell">
+    <main id="main-content" tabindex="-1">
       <section
         id="forest"
         class="original-experience scene"
         aria-labelledby="original-title"
         data-original-experience
         data-scene="forest"
-        data-scene-label="Original"
+        data-scene-label="Alku"
+        data-i18n-attr="data-scene-label:sceneOrigin"
       >
         <header class="original-main-header">
           <div class="original-layers" data-original-layers>
             <div class="original-layer__header" data-original-copy>
-              <div class="original-layers__caption">Tervetuloa portfoliooni</div>
-              <h1 id="original-title" class="original-layers__title">
-                Rakennan toimivia <br />
-                digitaalisia tuotteita.
+              <p class="original-layers__caption" data-i18n="heroCaption">Tervetuloa portfoliooni</p>
+              <h1 id="original-title" class="original-layers__title" data-i18n="heroTitle">
+                Rakennan toimivia digitaalisia tuotteita.
               </h1>
             </div>
 
-            <div
-              class="original-layer original-layers__base"
-              data-original-layer="far"
-              aria-hidden="true"
-            >
+            <div class="original-layer original-layers__base" data-original-layer="far" aria-hidden="true">
               <picture>
                 <source
                   media="(max-aspect-ratio: 3/4)"
@@ -164,15 +213,12 @@
                   sizes="max(100vw, 177.78vh)"
                   width="3840"
                   height="2160"
-                  alt="" fetchpriority="high"
+                  alt=""
+                  fetchpriority="high"
                 />
               </picture>
             </div>
-            <div
-              class="original-layer original-layers__middle"
-              data-original-layer="middle"
-              aria-hidden="true"
-            >
+            <div class="original-layer original-layers__middle" data-original-layer="middle" aria-hidden="true">
               <picture>
                 <source
                   media="(max-aspect-ratio: 3/4)"
@@ -186,15 +232,12 @@
                   sizes="max(100vw, 177.78vh)"
                   width="3840"
                   height="2160"
-                  alt="" decoding="async"
+                  alt=""
+                  decoding="async"
                 />
               </picture>
             </div>
-            <div
-              class="original-layer original-layers__front"
-              data-original-layer="near"
-              aria-hidden="true"
-            >
+            <div class="original-layer original-layers__front" data-original-layer="near" aria-hidden="true">
               <picture>
                 <source
                   media="(max-aspect-ratio: 3/4)"
@@ -208,7 +251,8 @@
                   sizes="max(100vw, 177.78vh)"
                   width="3840"
                   height="2160"
-                  alt="" decoding="async"
+                  alt=""
+                  decoding="async"
                 />
               </picture>
             </div>
@@ -217,281 +261,378 @@
 
         <article id="original-dungeon" class="original-main-article" aria-labelledby="original-about-title">
           <div class="original-main-article__content">
-            <h2 id="original-about-title" class="original-main-article__header">
+            <h2 id="original-about-title" class="original-main-article__header" data-i18n="aboutTitle">
               Olen Mykola Dotsenko — ohjelmistokehittäjä Turusta.
             </h2>
-            <p class="original-main-article__paragraph">
+            <p class="original-main-article__paragraph" data-i18n="aboutText">
               Suunnittelen ja rakennan moderneja verkkopalveluja Pythonilla, Djangolla, Reactilla ja
               TypeScriptillä. Minulle hyvä ohjelmisto tarkoittaa selkeää käyttäjäkokemusta,
               yksinkertaista arkkitehtuuria ja luotettavaa toteutusta. Kehitän osaamistani
               jatkuvasti ja etsin ratkaisuja, joilla on todellista arvoa käyttäjälle ja liiketoiminnalle.
             </p>
             <a class="original-main-article__next" href="#extension">
-              <span>Jatka tarinaa</span>
+              <span data-i18n="aboutNext">Jatka tarinaa</span>
               <span aria-hidden="true">↓</span>
             </a>
           </div>
-          <div class="original-copy">
+          <p class="original-copy" data-i18n="aboutGoal">
             Tavoitteeni on yhdistää selkeä käyttäjäkokemus, vahva tekninen toteutus ja todellinen liiketoiminta-arvo
-          </div>
+          </p>
         </article>
       </section>
 
-      <main id="main-content">
+      <section
+        id="extension"
+        class="extension-intro scene"
+        aria-labelledby="extension-title"
+        data-extension-start
+        data-scene="extension"
+        data-scene-label="Ajatus"
+        data-i18n-attr="data-scene-label:sceneIdea"
+      >
+        <div class="extension-intro__backdrop" aria-hidden="true" data-bridge-backdrop></div>
+        <div class="extension-intro__glow" aria-hidden="true">
+          <span class="extension-intro__glow-a"></span>
+          <span class="extension-intro__glow-b"></span>
+        </div>
 
-        <section id="extension" class="extension-intro" aria-labelledby="extension-title" data-extension-start>
-          <div class="extension-intro__inner">
-            <p class="section-index">From parallax to product thinking</p>
-            <h2 id="extension-title">The same idea<br />grew with me.</h2>
-            <p>
-              This forest began as a simple parallax experiment. The lesson outlived the demo:
-              clear layers make complex things easier to understand. That same principle now
-              shapes how I design interfaces, motion, and software systems.
+        <div class="extension-intro__inner">
+          <p class="eyebrow eyebrow--ember" data-i18n="introEyebrow">02 / Parallaksista tuoteajatteluun</p>
+          <h2 id="extension-title" data-bridge-title>
+            <span class="line"><span data-i18n="introTitle1">Sama ajatus</span></span>
+            <span class="line"><span data-i18n="introTitle2">kasvoi mukanani.</span></span>
+          </h2>
+          <p data-reveal data-i18n="introText">
+            Tämä metsä syntyi yksinkertaisena parallaksikokeiluna. Oppi eli demoa pidempään: selkeät
+            kerrokset tekevät monimutkaisesta helpommin ymmärrettävää. Sama periaate ohjaa nyt sitä,
+            miten suunnittelen käyttöliittymiä, liikettä ja ohjelmistojärjestelmiä.
+          </p>
+
+          <dl class="extension-intro__signals" aria-label="Tarinan jatkumo" data-i18n-attr="aria-label:introSignals">
+            <div data-reveal><dt>2023</dt><dd data-i18n="introSignal1">ensimmäinen kokeilu</dd></div>
+            <div data-reveal><dt>3</dt><dd data-i18n="introSignal2">näkyvää kerrosta</dd></div>
+            <div data-reveal><dt>1</dt><dd data-i18n="introSignal3">ajatus, joka kantoi</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section
+        id="xray"
+        class="scene scene--xray"
+        aria-labelledby="xray-title"
+        data-scene="xray"
+        data-scene-label="Kerrokset"
+        data-i18n-attr="data-scene-label:sceneLayers"
+      >
+        <div class="xray__sticky">
+          <div class="xray__copy">
+            <p class="section-index" data-reveal data-i18n="xrayIndex">03 / Kerrokset</p>
+            <p class="kicker" data-reveal data-i18n="xrayKicker">Jokaisella kokemuksella on rakenne</p>
+            <h2 id="xray-title" data-reveal data-i18n="xrayTitle">Aloita kerroksista.<br />Anna jokaiselle tehtävä.</h2>
+            <p class="xray__text" data-reveal data-i18n="xrayText">
+              Metsä toimii, koska tausta, keskikerros ja etuala liikkuvat kukin omalla tavallaan. Hyvä
+              tuotearkkitehtuuri noudattaa samaa ajatusta: erota vastuut, tee suhteet näkyviksi ja anna
+              jokaisen kerroksen ansaita paikkansa.
             </p>
 
-            <dl class="extension-intro__signals" aria-label="Story continuity">
-              <div><dt>2023</dt><dd>first experiment</dd></div>
-              <div><dt>3</dt><dd>visible layers</dd></div>
-              <div><dt>1</dt><dd>idea carried forward</dd></div>
+            <dl class="xray__legend" aria-label="Kerrosten nopeudet" data-i18n-attr="aria-label:xrayLegend" data-reveal>
+              <div><dt data-i18n="layerFar">Kauko</dt><dd><code>÷1.6</code></dd></div>
+              <div><dt data-i18n="layerMiddle">Keski</dt><dd><code>÷2.5</code></dd></div>
+              <div><dt data-i18n="layerNear">Lähi</dt><dd><code>÷5.7</code></dd></div>
             </dl>
           </div>
-        </section>
 
-        <section id="xray" class="scene scene--xray" aria-labelledby="xray-title" data-scene="xray" data-scene-label="Layers">
-          <div class="xray__sticky">
-            <div class="xray__copy">
-              <p class="section-index" data-reveal>02 / Layers</p>
-              <p class="kicker" data-reveal>Every experience has structure</p>
-              <h2 id="xray-title" data-reveal>Start with layers.<br />Give each one a job.</h2>
-              <p data-reveal>
-                The forest works because background, middle, and foreground each behave differently. Good product architecture follows the same idea: separate responsibilities, make relationships clear, and let every layer earn its place.
-              </p>
-            </div>
-
-            <div class="xray__stage" aria-hidden="true" data-xray-stage>
-              <div class="xray__layer xray__layer--far" data-xray-layer="far">
-                <img src="img/layer-base-1920.webp" srcset="img/layer-base-1280.webp 1280w, img/layer-base-1920.webp 1920w, img/layer-base-2560.webp 2560w, img/layer-base-3840.webp 3840w" sizes="(max-width: 900px) 80vw, min(54vw, 760px)" width="3840" height="2160" alt="" loading="lazy" decoding="async" />
+          <div class="xray__stage" aria-hidden="true" data-xray-stage>
+            <div class="xray__scene" data-xray-scene>
+              <div class="xray__plane xray__plane--far" data-xray-layer="far">
+                <img
+                  src="img/layer-base-1920.webp"
+                  srcset="img/layer-base-1280.webp 1280w, img/layer-base-1920.webp 1920w, img/layer-base-2560.webp 2560w, img/layer-base-3840.webp 3840w"
+                  sizes="(max-width: 900px) 84vw, min(46vw, 640px)"
+                  width="3840"
+                  height="2160"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="xray__tag"><b data-i18n="layerFar">Kauko</b> ÷1.6</span>
               </div>
-              <div class="xray__layer xray__layer--mid" data-xray-layer="mid">
-                <img src="img/layer-middle-1920.webp" srcset="img/layer-middle-1280.webp 1280w, img/layer-middle-1920.webp 1920w, img/layer-middle-2560.webp 2560w, img/layer-middle-3840.webp 3840w" sizes="(max-width: 900px) 80vw, min(54vw, 760px)" width="3840" height="2160" alt="" loading="lazy" decoding="async" />
+              <div class="xray__plane xray__plane--mid" data-xray-layer="mid">
+                <img
+                  src="img/layer-middle-1920.webp"
+                  srcset="img/layer-middle-1280.webp 1280w, img/layer-middle-1920.webp 1920w, img/layer-middle-2560.webp 2560w, img/layer-middle-3840.webp 3840w"
+                  sizes="(max-width: 900px) 84vw, min(46vw, 640px)"
+                  width="3840"
+                  height="2160"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="xray__tag"><b data-i18n="layerMiddle">Keski</b> ÷2.5</span>
               </div>
-              <div class="xray__layer xray__layer--near" data-xray-layer="near">
-                <img src="img/layer-front-1920.webp" srcset="img/layer-front-1280.webp 1280w, img/layer-front-1920.webp 1920w, img/layer-front-2560.webp 2560w, img/layer-front-3840.webp 3840w" sizes="(max-width: 900px) 80vw, min(54vw, 760px)" width="3840" height="2160" alt="" loading="lazy" decoding="async" />
+              <div class="xray__plane xray__plane--near" data-xray-layer="near">
+                <img
+                  src="img/layer-front-1920.webp"
+                  srcset="img/layer-front-1280.webp 1280w, img/layer-front-1920.webp 1920w, img/layer-front-2560.webp 2560w, img/layer-front-3840.webp 3840w"
+                  sizes="(max-width: 900px) 84vw, min(46vw, 640px)"
+                  width="3840"
+                  height="2160"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="xray__tag"><b data-i18n="layerNear">Lähi</b> ÷5.7</span>
               </div>
-              <div class="xray__axis"></div>
-            </div>
-
-            <dl class="xray__legend" aria-label="Depth layer values">
-              <div data-xray-spec><dt>Far</dt><dd>÷1.6</dd></div>
-              <div data-xray-spec><dt>Middle</dt><dd>÷2.5</dd></div>
-              <div data-xray-spec><dt>Near</dt><dd>÷5.7</dd></div>
-            </dl>
-          </div>
-        </section>
-
-        <section id="mist" class="scene scene--mist narrative" aria-labelledby="depth-title" data-scene="mist" data-scene-label="Focus">
-          <div class="mist" aria-hidden="true">
-            <span class="mist__band mist__band--one"></span>
-            <span class="mist__band mist__band--two"></span>
-            <span class="mist__orb"></span>
-          </div>
-
-          <div class="narrative__grid">
-            <div class="section-index" data-reveal>03 / Focus</div>
-            <div class="narrative__copy">
-              <p class="kicker" data-reveal>Hierarchy guides attention</p>
-              <h2 id="depth-title" data-reveal>Depth is useful when it makes the next step obvious.</h2>
-              <p data-reveal>
-                The same visual depth that makes the forest readable also guides interface design:
-                important things come forward, supporting context recedes, and the user always
-                knows where to look next.
-              </p>
-            </div>
-
-            <dl class="signal-grid" aria-label="Focus signals">
-              <div data-reveal>
-                <dt>1</dt>
-                <dd>clear focus</dd>
-              </div>
-              <div data-reveal>
-                <dt>3</dt>
-                <dd>depth planes</dd>
-              </div>
-              <div data-reveal>
-                <dt>0</dt>
-                <dd>decorative noise</dd>
-              </div>
-            </dl>
-          </div>
-        </section>
-
-        <section id="night" class="scene scene--night narrative" aria-labelledby="rhythm-title" data-scene="night" data-scene-label="Rhythm">
-          <img
-            class="night-image"
-            src="img/dungeon-1920.webp"
-            alt=""
-            loading="lazy"
-            decoding="async"
-            data-night-image
-            aria-hidden="true"
-          />
-          <div class="night-overlay" aria-hidden="true"></div>
-          <div class="night-shutter night-shutter--left" data-night-shutter="left" aria-hidden="true"></div>
-          <div class="night-shutter night-shutter--right" data-night-shutter="right" aria-hidden="true"></div>
-
-          <div class="narrative__grid narrative__grid--night">
-            <div class="section-index" data-reveal>04 / Rhythm</div>
-            <div class="narrative__copy">
-              <p class="kicker" data-reveal>Interaction should follow intent</p>
-              <h2 id="rhythm-title" data-reveal>Motion should explain change, not compete for attention.</h2>
-              <p data-reveal>
-                The user sets the pace. Native scrolling stays authoritative while motion adds
-                context around that intent. When movement is reduced or removed, the experience
-                still communicates the same structure and meaning.
-              </p>
-            </div>
-
-            <div class="motion-note" data-reveal>
-              <span class="motion-note__line" aria-hidden="true"></span>
-              <p>
-                If motion disappears, the experience still makes sense. Enhancement should add
-                meaning, never carry it alone.
-              </p>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section id="principles" class="scene scene--principles" aria-labelledby="principles-title" data-scene="principles" data-scene-label="Craft">
-          <div class="principles__heading">
-            <p class="section-index" data-reveal>05 / Craft</p>
-            <h2 id="principles-title" data-reveal>The visual idea becomes an engineering discipline.</h2>
-          </div>
+      <section
+        id="mist"
+        class="scene scene--mist narrative"
+        aria-labelledby="depth-title"
+        data-scene="mist"
+        data-scene-label="Fokus"
+        data-i18n-attr="data-scene-label:sceneFocus"
+      >
+        <div class="mist" aria-hidden="true">
+          <span class="mist__band mist__band--one"></span>
+          <span class="mist__band mist__band--two"></span>
+          <span class="mist__orb"></span>
+        </div>
 
-          <div class="principles-grid">
-            <article class="principle-card" data-reveal>
-              <span class="principle-card__number">01</span>
-              <h3>Clear layers</h3>
-              <p>
-                Each responsibility has one place. The original parallax, modern scene motion,
-                user preferences, and semantic content stay deliberately separated.
-              </p>
-            </article>
-
-            <article class="principle-card" data-reveal>
-              <span class="principle-card__number">02</span>
-              <h3>Adaptive by default</h3>
-              <p>
-                The experience adapts to pointer type, screen size, and
-                <code>prefers-reduced-motion</code> without changing the underlying story.
-              </p>
-            </article>
-
-            <article class="principle-card" data-reveal>
-              <span class="principle-card__number">03</span>
-              <h3>Quality without waste</h3>
-              <p>
-                Keep what creates value, remove what does not. The original artwork stays at
-                full quality while code, loading, and compositing carry the performance work.
-              </p>
-            </article>
-          </div>
-        </section>
-
-
-        <section id="system" class="scene scene--system" aria-labelledby="system-title" data-scene="system" data-scene-label="Structure">
-          <div class="system-shell">
-            <div class="system-copy">
-              <p class="section-index" data-reveal>06 / Structure</p>
-              <p class="kicker" data-reveal>The craft beneath the scene</p>
-              <h2 id="system-title" data-reveal>Simple parts.<br />Clear boundaries.</h2>
-              <p data-reveal>
-                The same layered thinking becomes architecture: system signals resolve into one
-                motion profile, small adapters handle browser behavior, and semantic HTML remains
-                the stable center of the experience.
-              </p>
-
-              <dl class="system-signals" aria-label="Architecture constraints">
-                <div data-reveal><dt>1</dt><dd>scroll source</dd></div>
-                <div data-reveal><dt>1</dt><dd>motion model</dd></div>
-                <div data-reveal><dt>2</dt><dd>browser adapters</dd></div>
-              </dl>
-            </div>
-
-            <div class="system-pipeline" aria-label="Motion architecture flow">
-              <article class="system-node system-node--signal" data-system-node>
-                <span class="system-node__index">01 / Signals</span>
-                <h3>System + user</h3>
-                <p>Media queries and locally persisted Motion Lab preferences.</p>
-                <code>reducedMotion · pointer · override</code>
-              </article>
-
-              <span class="system-connector" data-system-connector aria-hidden="true"></span>
-
-              <article class="system-node system-node--model" data-system-node>
-                <span class="system-node__index">02 / Pure model</span>
-                <h3>Motion profile</h3>
-                <p>One deterministic function clamps intensity and selects behavior.</p>
-                <code>getMotionProfile()</code>
-              </article>
-
-              <span class="system-connector" data-system-connector aria-hidden="true"></span>
-
-              <div class="system-adapters" aria-label="Browser adapters">
-                <article class="system-node" data-system-node>
-                  <span class="system-node__index">03 / Scroll</span>
-                  <h3>Scroll adapter</h3>
-                  <p>ScrollTrigger maps native scroll to bounded transforms.</p>
-                  <code>motion.js</code>
-                </article>
-
-                <article class="system-node" data-system-node>
-                  <span class="system-node__index">04 / Pointer</span>
-                  <h3>Pointer adapter</h3>
-                  <p>Fine pointers get one frame-coalesced depth signal.</p>
-                  <code>pointer-depth.js</code>
-                </article>
-              </div>
-
-              <span class="system-connector" data-system-connector aria-hidden="true"></span>
-
-              <article class="system-node system-node--output" data-system-node>
-                <span class="system-node__index">05 / Output</span>
-                <h3>Semantic DOM</h3>
-                <p>The same content survives when every enhancement disappears.</p>
-                <code>transform · opacity</code>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section id="aurora" class="scene scene--aurora" aria-labelledby="aurora-title" data-scene="aurora" data-scene-label="Outcome">
-          <div class="aurora" aria-hidden="true">
-            <span class="aurora__ribbon aurora__ribbon--one"></span>
-            <span class="aurora__ribbon aurora__ribbon--two"></span>
-            <span class="aurora__ribbon aurora__ribbon--three"></span>
-            <span class="aurora__stars"></span>
-          </div>
-
-          <div class="aurora__content">
-            <p class="eyebrow" data-reveal>07 / Outcome</p>
-            <h2 id="aurora-title" data-reveal>Complex should feel simple.</h2>
-            <p data-reveal>
-              That is the thread through the whole page: layers create depth, hierarchy creates focus, motion creates context, and clear architecture keeps the experience dependable.
+        <div class="narrative__grid">
+          <p class="section-index" data-reveal data-i18n="mistIndex">04 / Fokus</p>
+          <div class="narrative__copy">
+            <p class="kicker" data-reveal data-i18n="mistKicker">Hierarkia ohjaa huomiota</p>
+            <h2 id="depth-title" data-reveal data-i18n="mistTitle">Syvyys on hyödyllistä, kun se tekee seuraavan askeleen selväksi.</h2>
+            <p data-reveal data-i18n="mistText">
+              Sama visuaalinen syvyys, joka tekee metsästä luettavan, ohjaa myös käyttöliittymäsuunnittelua:
+              tärkeä tulee eteen, tukeva konteksti väistyy, ja käyttäjä tietää aina, mihin katsoa seuraavaksi.
             </p>
-            <div class="cta-row" data-reveal>
-              <a class="button button--primary" href="https://github.com/MykolaDotsenko/nordic-depths">
-                View source
-              </a>
-              <a class="button button--ghost" href="https://github.com/MykolaDotsenko/nordic-depths/blob/main/ARCHITECTURE.md">Engineering notes</a>
-            </div>
           </div>
-        </section>
-      </main>
 
-      <footer class="site-footer">
-        <p>Nordic Depths · From parallax experiment to product engineering story</p>
-        <a href="#top">Back to top</a>
-      </footer>
-    </div>
+          <dl class="signal-grid" aria-label="Fokuksen signaalit" data-i18n-attr="aria-label:mistSignals">
+            <div data-reveal><dt>1</dt><dd data-i18n="mistSignal1">selkeä fokus</dd></div>
+            <div data-reveal><dt>3</dt><dd data-i18n="mistSignal2">syvyystasoa</dd></div>
+            <div data-reveal><dt>0</dt><dd data-i18n="mistSignal3">koristeellista melua</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section
+        id="night"
+        class="scene scene--night narrative"
+        aria-labelledby="rhythm-title"
+        data-scene="night"
+        data-scene-label="Rytmi"
+        data-i18n-attr="data-scene-label:sceneRhythm"
+      >
+        <img
+          class="night-image"
+          src="img/dungeon-1920.webp"
+          width="1920"
+          height="1080"
+          alt=""
+          loading="lazy"
+          decoding="async"
+          data-night-image
+          aria-hidden="true"
+        />
+        <div class="night-overlay" aria-hidden="true"></div>
+        <div class="night-glow" aria-hidden="true" data-night-glow></div>
+        <div class="night-shutter night-shutter--left" data-night-shutter="left" aria-hidden="true"></div>
+        <div class="night-shutter night-shutter--right" data-night-shutter="right" aria-hidden="true"></div>
+
+        <div class="narrative__grid narrative__grid--night">
+          <p class="section-index" data-reveal data-i18n="nightIndex">05 / Rytmi</p>
+          <div class="narrative__copy">
+            <p class="kicker" data-reveal data-i18n="nightKicker">Vuorovaikutuksen pitää seurata aikomusta</p>
+            <h2 id="rhythm-title" data-reveal data-i18n="nightTitle">Liikkeen pitää selittää muutosta, ei kilpailla huomiosta.</h2>
+            <p data-reveal data-i18n="nightText">
+              Käyttäjä määrää tahdin. Natiivi vieritys pysyy johtavana, ja liike lisää kontekstia sen
+              ympärille. Kun liikettä vähennetään tai se poistetaan, kokemus välittää edelleen saman
+              rakenteen ja merkityksen.
+            </p>
+          </div>
+
+          <div class="motion-note" data-reveal>
+            <span class="motion-note__line" aria-hidden="true"></span>
+            <p data-i18n="nightNote">
+              Jos liike katoaa, kokemus on silti järkevä. Tehosteen pitää lisätä merkitystä, ei kantaa sitä yksin.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="principles"
+        class="scene scene--principles"
+        aria-labelledby="principles-title"
+        data-scene="principles"
+        data-scene-label="Taito"
+        data-i18n-attr="data-scene-label:sceneCraft"
+      >
+        <div class="principles__heading">
+          <p class="section-index" data-reveal data-i18n="craftIndex">06 / Taito</p>
+          <h2 id="principles-title" data-reveal data-i18n="craftTitle">Visuaalisesta ideasta tulee insinöörin työtapa.</h2>
+        </div>
+
+        <div class="principles-grid">
+          <article class="principle-card" data-reveal>
+            <span class="principle-card__number">01</span>
+            <h3 data-i18n="craft1Title">Selkeät kerrokset</h3>
+            <p data-i18n="craft1Text">
+              Jokaisella vastuulla on yksi paikka. Alkuperäinen parallaksi, uusi kohtausliike, käyttäjän
+              asetukset ja semanttinen sisältö pysyvät tarkoituksella erillään.
+            </p>
+          </article>
+
+          <article class="principle-card" data-reveal>
+            <span class="principle-card__number">02</span>
+            <h3 data-i18n="craft2Title">Mukautuva oletuksena</h3>
+            <p data-i18n="craft2Text">
+              Kokemus mukautuu osoitintyyppiin, näytön kokoon ja <code>prefers-reduced-motion</code>-asetukseen
+              muuttamatta itse tarinaa.
+            </p>
+          </article>
+
+          <article class="principle-card" data-reveal>
+            <span class="principle-card__number">03</span>
+            <h3 data-i18n="craft3Title">Laatua ilman hukkaa</h3>
+            <p data-i18n="craft3Text">
+              Pidä se, mikä luo arvoa, ja poista loput. Alkuperäinen taideteos näkyy täydessä loistossaan
+              kevyinä WebP-versioina, ja koodi, lataus ja kompositointi hoitavat suorituskyvyn.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section
+        id="system"
+        class="scene scene--system"
+        aria-labelledby="system-title"
+        data-scene="system"
+        data-scene-label="Rakenne"
+        data-i18n-attr="data-scene-label:sceneStructure"
+      >
+        <div class="system-shell">
+          <div class="system-copy">
+            <p class="section-index" data-reveal data-i18n="systemIndex">07 / Rakenne</p>
+            <p class="kicker" data-reveal data-i18n="systemKicker">Taito kohtauksen alla</p>
+            <h2 id="system-title" data-reveal data-i18n="systemTitle">Yksinkertaiset osat.<br />Selkeät rajat.</h2>
+            <p data-reveal data-i18n="systemText">
+              Sama kerroksellinen ajattelu muuttuu arkkitehtuuriksi: järjestelmän signaalit kootaan yhdeksi
+              liikeprofiiliksi, pienet adapterit hoitavat selaimen käyttäytymisen, ja semanttinen HTML
+              pysyy kokemuksen vakaana keskuksena.
+            </p>
+
+            <dl class="system-signals" aria-label="Arkkitehtuurin rajoitteet" data-i18n-attr="aria-label:systemSignals">
+              <div data-reveal><dt>1</dt><dd data-i18n="systemSignal1">vierityslähde</dd></div>
+              <div data-reveal><dt>1</dt><dd data-i18n="systemSignal2">liikemalli</dd></div>
+              <div data-reveal><dt>2</dt><dd data-i18n="systemSignal3">selainadapteria</dd></div>
+            </dl>
+          </div>
+
+          <div class="system-pipeline" role="group" aria-label="Liikearkkitehtuurin kulku" data-i18n-attr="aria-label:systemFlow">
+            <article class="system-node system-node--signal" data-system-node>
+              <span class="system-node__index" data-i18n="node1Index">01 / Signaalit</span>
+              <h3 data-i18n="node1Title">Järjestelmä + käyttäjä</h3>
+              <p data-i18n="node1Text">Mediakyselyt ja paikallisesti tallennetut Motion Lab -asetukset.</p>
+              <code>reducedMotion · pointer · override</code>
+            </article>
+
+            <span class="system-connector" data-system-connector aria-hidden="true"></span>
+
+            <article class="system-node system-node--model" data-system-node>
+              <span class="system-node__index" data-i18n="node2Index">02 / Puhdas malli</span>
+              <h3 data-i18n="node2Title">Liikeprofiili</h3>
+              <p data-i18n="node2Text">Yksi deterministinen funktio rajaa voimakkuuden ja valitsee käytöksen.</p>
+              <code>getMotionProfile()</code>
+            </article>
+
+            <span class="system-connector" data-system-connector aria-hidden="true"></span>
+
+            <div class="system-adapters" role="group" aria-label="Selainadapterit" data-i18n-attr="aria-label:systemAdapters">
+              <article class="system-node" data-system-node>
+                <span class="system-node__index" data-i18n="node3Index">03 / Vieritys</span>
+                <h3 data-i18n="node3Title">Vieritysadapteri</h3>
+                <p data-i18n="node3Text">ScrollTrigger muuntaa natiivin vierityksen rajatuiksi transformeiksi.</p>
+                <code>motion.js</code>
+              </article>
+
+              <article class="system-node" data-system-node>
+                <span class="system-node__index" data-i18n="node4Index">04 / Osoitin</span>
+                <h3 data-i18n="node4Title">Osoitinadapteri</h3>
+                <p data-i18n="node4Text">Tarkat osoittimet saavat yhden ruutuun yhdistetyn syvyyssignaalin.</p>
+                <code>pointer-depth.js</code>
+              </article>
+            </div>
+
+            <span class="system-connector" data-system-connector aria-hidden="true"></span>
+
+            <article class="system-node system-node--output" data-system-node>
+              <span class="system-node__index" data-i18n="node5Index">05 / Tulos</span>
+              <h3 data-i18n="node5Title">Semanttinen DOM</h3>
+              <p data-i18n="node5Text">Sama sisältö säilyy, vaikka jokainen tehoste katoaisi.</p>
+              <code>transform · opacity</code>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="aurora"
+        class="scene scene--aurora"
+        aria-labelledby="aurora-title"
+        data-scene="aurora"
+        data-scene-label="Lopputulos"
+        data-i18n-attr="data-scene-label:sceneOutcome"
+      >
+        <div class="aurora" aria-hidden="true">
+          <span class="aurora__ribbon aurora__ribbon--one"></span>
+          <span class="aurora__ribbon aurora__ribbon--two"></span>
+          <span class="aurora__ribbon aurora__ribbon--three"></span>
+          <span class="aurora__ribbon aurora__ribbon--four"></span>
+          <span class="aurora__stars"></span>
+          <span class="aurora__stars aurora__stars--twinkle"></span>
+        </div>
+
+        <div class="aurora__content">
+          <p class="eyebrow" data-reveal data-i18n="outcomeIndex">08 / Lopputulos</p>
+          <h2 id="aurora-title" data-reveal data-i18n="outcomeTitle">Monimutkaisen pitää tuntua yksinkertaiselta.</h2>
+          <p class="aurora__text" data-reveal data-i18n="outcomeText">
+            Se on koko sivun punainen lanka: kerrokset luovat syvyyttä, hierarkia luo fokusta, liike luo
+            kontekstia ja selkeä arkkitehtuuri pitää kokemuksen luotettavana.
+          </p>
+
+          <div id="contact" class="contact" role="region" aria-labelledby="contact-title" data-reveal>
+            <h3 id="contact-title" class="contact__title" data-i18n="contactTitle">Jutellaan</h3>
+            <p class="contact__text" data-i18n="contactText">Kerro projektistasi tai tiimistäsi — vastaan mielelläni.</p>
+            <div class="cta-row">
+              <a class="button button--primary" href="https://www.linkedin.com/in/mykola-dotsenko/" rel="me">LinkedIn</a>
+              <a class="button button--ghost" href="https://github.com/MykolaDotsenko" rel="me">GitHub</a>
+            </div>
+            <p class="contact__meta">
+              <span data-i18n="contactMeta">Mykola Dotsenko · Ohjelmistokehittäjä · Turku</span>
+              <span class="contact__links">
+                <a href="https://github.com/MykolaDotsenko/nordic-depths" data-i18n="contactSource">Lähdekoodi</a>
+                <a href="https://github.com/MykolaDotsenko/nordic-depths/blob/main/ARCHITECTURE.md" data-i18n="contactNotes">Tekniset muistiinpanot</a>
+              </span>
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p data-i18n="footerText">Nordic Depths · Parallaksikokeilusta tuotekehityksen tarinaksi</p>
+      <nav class="site-footer__nav" aria-label="Alatunniste" data-i18n-attr="aria-label:footerLabel">
+        <a href="https://www.linkedin.com/in/mykola-dotsenko/" rel="me">LinkedIn</a>
+        <a href="https://github.com/MykolaDotsenko" rel="me">GitHub</a>
+        <a href="#top" data-i18n="footerTop">Takaisin alkuun</a>
+      </nav>
+    </footer>
   </body>
 </html>

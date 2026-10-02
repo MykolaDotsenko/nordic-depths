@@ -1,3 +1,4 @@
+import { initI18n } from "./i18n.js";
 import { initOriginalParallax } from "./original-parallax.js";
 import { getMotionProfile } from "./motion-model.js";
 import { loadMotionPreferences, saveMotionPreferences } from "./motion-preferences.js";
@@ -16,6 +17,9 @@ let cleanupMotion = () => {};
 let cleanupOriginalParallax = () => {};
 let cleanupPointer = () => {};
 let motionLab = null;
+let currentScene = null;
+
+const sceneLabel = (scene) => scene?.dataset.sceneLabel || scene?.id || "";
 
 function createProfile() {
   return getMotionProfile({
@@ -26,20 +30,8 @@ function createProfile() {
   });
 }
 
-function initHeader() {
-  const header = document.querySelector("[data-header]");
-  if (!header) return () => {};
-
-  const sync = () => {
-    header.classList.toggle("is-scrolled", window.scrollY > 24);
-  };
-
-  sync();
-  window.addEventListener("scroll", sync, { passive: true });
-
-  return () => window.removeEventListener("scroll", sync);
-}
-
+// The modern chrome (header, compass, progress, Motion Lab) appears only as the
+// continuation approaches, so the 2023 sequence plays without it.
 function initExtensionChrome() {
   const extension = document.querySelector("[data-extension-start]");
   if (!extension) return () => {};
@@ -48,7 +40,7 @@ function initExtensionChrome() {
   let threshold = 0;
 
   const measure = () => {
-    threshold = Math.max(0, extension.offsetTop - window.innerHeight * 0.32);
+    threshold = Math.max(0, extension.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.32);
   };
 
   const render = () => {
@@ -100,13 +92,20 @@ function syncMotion() {
 }
 
 function start() {
-  const cleanupHeader = initHeader();
+  const i18n = initI18n({
+    onChange() {
+      motionLab?.refresh();
+      motionLab?.setScene(sceneLabel(currentScene));
+    },
+  });
+
   const cleanupExtensionChrome = initExtensionChrome();
   syncOriginalParallax();
 
   motionLab = initMotionLab({
     preferences,
     systemReduced: reducedMotionQuery.matches,
+    t: i18n.t,
     onPreferencesChange(next) {
       preferences = saveMotionPreferences(next);
       syncMotion();
@@ -115,7 +114,8 @@ function start() {
 
   const cleanupCompass = initSceneCompass({
     onSceneChange(scene) {
-      motionLab?.setScene(scene);
+      currentScene = scene;
+      motionLab?.setScene(sceneLabel(scene));
     },
   });
 
@@ -133,19 +133,24 @@ function start() {
   window.addEventListener(
     "pagehide",
     () => {
-      cleanupHeader();
       cleanupExtensionChrome();
       cleanupCompass();
       cleanupMotion();
       cleanupOriginalParallax();
       cleanupPointer();
       motionLab?.cleanup();
+      i18n.cleanup();
       reducedMotionQuery.removeEventListener("change", onReducedMotionChange);
       coarsePointerQuery.removeEventListener("change", onPointerChange);
     },
     { once: true },
   );
 }
+
+// A page restored from the back/forward cache ran its pagehide cleanup; start again.
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) start();
+});
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", start, { once: true });

@@ -1,3 +1,6 @@
+const STICKY_STAGE = "(min-width: 901px) and (min-height: 621px)";
+const FLOWING_STAGE = "(max-width: 900px), (max-height: 620px)";
+
 export function initScrollMotion(profile) {
   const { gsap, ScrollTrigger } = window;
 
@@ -6,128 +9,79 @@ export function initScrollMotion(profile) {
   }
 
   gsap.registerPlugin(ScrollTrigger);
+  const compact = profile.mode === "compact";
+  const media = gsap.matchMedia();
+
   const context = gsap.context(() => {
+    // Handoff: the dungeon backdrop settles and the intro title rises line by line.
+    const intro = document.querySelector("[data-extension-start]");
+    const backdrop = intro?.querySelector("[data-bridge-backdrop]");
+    const titleLines = intro?.querySelectorAll("[data-bridge-title] .line > span");
+
+    if (intro && backdrop) {
+      gsap.fromTo(
+        backdrop,
+        { scale: 1.14, opacity: 0.62 },
+        {
+          scale: 1,
+          opacity: 0.3,
+          ease: "none",
+          scrollTrigger: { trigger: intro, start: "top bottom", end: "top 20%", scrub: true },
+        },
+      );
+    }
+
+    if (intro && titleLines?.length) {
+      gsap.fromTo(
+        titleLines,
+        { yPercent: 108 },
+        {
+          yPercent: 0,
+          ease: "power3.out",
+          stagger: 0.14,
+          scrollTrigger: { trigger: intro, start: "top 85%", end: "top 30%", scrub: 0.6 },
+        },
+      );
+    }
+
+    // X-Ray: composed forest → exploded 3D stack (slow orbit) → composed again.
+    // The scene's CSS variables drive rotation, plane depth and the tags.
     const xray = document.querySelector('[data-scene="xray"]');
-    if (xray) {
-      const far = xray.querySelector('[data-xray-layer="far"]');
-      const mid = xray.querySelector('[data-xray-layer="mid"]');
-      const near = xray.querySelector('[data-xray-layer="near"]');
-      const specs = xray.querySelectorAll("[data-xray-spec]");
-      const compact = profile.mode === "compact";
+    const xrayScene = xray?.querySelector("[data-xray-scene]");
+    const xrayStage = xray?.querySelector("[data-xray-stage]");
 
-      const xrayTimeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: xray,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.5,
-        },
+    if (xray && xrayScene && xrayStage) {
+      const tilt = compact ? 50 : 56;
+      const buildXray = (scrollTrigger) => {
+        gsap.set(xrayScene, { "--rx": "0deg", "--rz": "0deg", "--xray-explode": 0 });
+        gsap
+          .timeline({ scrollTrigger, defaults: { ease: "power2.inOut" } })
+          .to(xrayScene, { "--rx": `${tilt}deg`, "--rz": "-28deg", "--xray-explode": 1, duration: 0.34 }, 0.06)
+          .to(xrayScene, { "--rz": "-18deg", duration: 0.24, ease: "none" }, 0.4)
+          .to(xrayScene, { "--rx": "0deg", "--rz": "0deg", "--xray-explode": 0, duration: 0.3 }, 0.66);
+      };
+
+      media.add(STICKY_STAGE, () => {
+        buildXray({ trigger: xray, start: "top top", end: "bottom bottom", scrub: 0.6 });
       });
-
-      xrayTimeline
-        .to(
-          far,
-          {
-            xPercent: compact ? -10 : -48,
-            yPercent: compact ? -16 : -4,
-            scale: compact ? 0.78 : 0.68,
-            rotation: compact ? -0.5 : -1.4,
-            ease: "power2.inOut",
-          },
-          0,
-        )
-        .to(mid, { scale: compact ? 0.8 : 0.72, ease: "power2.inOut" }, 0)
-        .to(
-          near,
-          {
-            xPercent: compact ? 10 : 48,
-            yPercent: compact ? 16 : 4,
-            scale: compact ? 0.78 : 0.68,
-            rotation: compact ? 0.5 : 1.4,
-            ease: "power2.inOut",
-          },
-          0,
-        )
-        .fromTo(
-          specs,
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, stagger: 0.04, duration: 0.16, ease: "power2.out" },
-          0.12,
-        )
-        .to(
-          [far, mid, near],
-          {
-            xPercent: 0,
-            yPercent: 0,
-            scale: 1,
-            rotation: 0,
-            duration: 0.34,
-            ease: "power2.inOut",
-          },
-          0.66,
-        )
-        .to(specs, { opacity: 0.72, duration: 0.2 }, 0.72);
-    }
-
-    const systemScene = document.querySelector('[data-scene="system"]');
-    if (systemScene) {
-      const systemNodes = systemScene.querySelectorAll("[data-system-node]");
-      const systemConnectors = systemScene.querySelectorAll("[data-system-connector]");
-
-      gsap.from(systemNodes, {
-        y: Math.min(profile.revealDistance, 26),
-        opacity: 0,
-        duration: 0.72,
-        stagger: 0.09,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: systemScene,
-          start: "top 64%",
-          once: true,
-        },
-      });
-
-      gsap.from(systemConnectors, {
-        scaleY: 0,
-        opacity: 0,
-        duration: 0.34,
-        stagger: 0.08,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: systemScene,
-          start: "top 58%",
-          once: true,
-        },
+      media.add(FLOWING_STAGE, () => {
+        buildXray({ trigger: xrayStage, start: "top 88%", end: "bottom 12%", scrub: 0.6 });
       });
     }
 
+    // Rhythm: the scene opens like doors as it enters, and the cave light comes up.
     const nightScene = document.querySelector('[data-scene="night"]');
-    const nightShutters = nightScene?.querySelectorAll("[data-night-shutter]");
-    if (nightScene && nightShutters?.length) {
-      const [leftShutter, rightShutter] = nightShutters;
-      const travel = profile.mode === "compact" ? 22 : 34;
+    const [leftShutter, rightShutter] = nightScene?.querySelectorAll("[data-night-shutter]") ?? [];
+    const nightGlow = nightScene?.querySelector("[data-night-glow]");
 
-      gsap
-        .timeline({
-          scrollTrigger: {
-            trigger: nightScene,
-            start: "top 82%",
-            end: "45% 38%",
-            scrub: 0.55,
-          },
-        })
-        .fromTo(
-          leftShutter,
-          { xPercent: 0, opacity: 0.84 },
-          { xPercent: -travel, opacity: 0.14, ease: "none" },
-          0,
-        )
-        .fromTo(
-          rightShutter,
-          { xPercent: 0, opacity: 0.84 },
-          { xPercent: travel, opacity: 0.14, ease: "none" },
-          0,
-        );
+    if (nightScene && leftShutter && rightShutter) {
+      const doors = gsap.timeline({
+        scrollTrigger: { trigger: nightScene, start: "top 90%", end: "top 12%", scrub: 0.5 },
+      });
+      doors
+        .fromTo(leftShutter, { xPercent: 0, opacity: 1 }, { xPercent: -100, opacity: 1, ease: "power2.inOut" }, 0)
+        .fromTo(rightShutter, { xPercent: 0, opacity: 1 }, { xPercent: 100, opacity: 1, ease: "power2.inOut" }, 0);
+      if (nightGlow) doors.fromTo(nightGlow, { opacity: 0 }, { opacity: 1, ease: "none" }, 0.25);
     }
 
     const nightImage = document.querySelector("[data-night-image]");
@@ -149,33 +103,43 @@ export function initScrollMotion(profile) {
       );
     }
 
+    const systemScene = document.querySelector('[data-scene="system"]');
+    if (systemScene) {
+      gsap.from(systemScene.querySelectorAll("[data-system-node]"), {
+        y: Math.min(profile.revealDistance, 26),
+        opacity: 0,
+        duration: 0.72,
+        stagger: 0.09,
+        ease: "power3.out",
+        scrollTrigger: { trigger: systemScene, start: "top 64%", once: true },
+      });
+
+      gsap.from(systemScene.querySelectorAll("[data-system-connector]"), {
+        scaleY: 0,
+        opacity: 0,
+        duration: 0.34,
+        stagger: 0.08,
+        ease: "power2.out",
+        scrollTrigger: { trigger: systemScene, start: "top 58%", once: true },
+      });
+    }
+
     const auroraScene = document.querySelector('[data-scene="aurora"]');
     if (auroraScene) {
-      const ribbons = auroraScene.querySelectorAll(".aurora__ribbon");
-      const stars = auroraScene.querySelector(".aurora__stars");
-
-      gsap.from(ribbons, {
+      gsap.from(auroraScene.querySelectorAll(".aurora__ribbon"), {
         opacity: 0,
         stagger: 0.08,
         ease: "none",
-        scrollTrigger: {
-          trigger: auroraScene,
-          start: "top 86%",
-          end: "40% 48%",
-          scrub: true,
-        },
+        scrollTrigger: { trigger: auroraScene, start: "top 86%", end: "40% 48%", scrub: true },
       });
 
+      // The twinkle layer animates its own opacity in CSS, so only the static stars build in.
+      const stars = auroraScene.querySelector(".aurora__stars:not(.aurora__stars--twinkle)");
       if (stars) {
         gsap.from(stars, {
           opacity: 0.06,
           ease: "none",
-          scrollTrigger: {
-            trigger: auroraScene,
-            start: "top 82%",
-            end: "35% 52%",
-            scrub: true,
-          },
+          scrollTrigger: { trigger: auroraScene, start: "top 82%", end: "35% 52%", scrub: true },
         });
       }
     }
@@ -186,16 +150,13 @@ export function initScrollMotion(profile) {
         opacity: 0,
         duration: 0.8,
         ease: "power3.out",
-        scrollTrigger: {
-          trigger: element,
-          start: "top 88%",
-          once: true,
-        },
+        scrollTrigger: { trigger: element, start: "top 88%", once: true },
       });
     });
   });
 
   return () => {
+    media.revert();
     context.revert();
   };
 }

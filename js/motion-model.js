@@ -48,3 +48,15 @@ export function getMotionProfile({
   });
 }
 
+// Exponentially smoothed scroll velocity in px/s. Sampled every animation frame,
+// so a resting page (deltaY = 0) decays towards zero instead of freezing.
+export function smoothVelocity(previous, deltaY, elapsedMs, factor = 0.2) {
+  const raw = (deltaY / Math.max(elapsedMs, 1)) * 1000;
+  const next = previous + (raw - previous) * factor;
+  return Math.abs(next) < 0.5 ? 0 : next;
+}
+
+export function formatVelocity(velocity) {
+  const rounded = Math.round(velocity);
+  return `${rounded > 0 ? "+" : ""}${rounded === 0 ? 0 : rounded} px/s`;
+}

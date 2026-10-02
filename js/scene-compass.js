@@ -26,7 +26,7 @@ export function initSceneCompass({ onSceneChange = () => {} } = {}) {
       }
     });
 
-    onSceneChange(scene.dataset.sceneLabel || scene.id);
+    onSceneChange(scene);
   };
 
   const updateProgress = () => {
@@ -62,7 +62,7 @@ export function initSceneCompass({ onSceneChange = () => {} } = {}) {
     window.addEventListener("scroll", onScroll, { passive: true });
     updateProgress();
   }
-  onSceneChange(scenes[0].dataset.sceneLabel || scenes[0].id);
+  onSceneChange(scenes[0]);
 
   return () => {
     observer?.disconnect();
