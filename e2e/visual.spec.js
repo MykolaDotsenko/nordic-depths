@@ -103,11 +103,17 @@ test("capture visual preview", async ({ page }, testInfo) => {
   await waitForSettledParallax(page);
   await page.screenshot({ path: out("14-english-forest") });
 
+  await page.goto("/?lang=uk");
+  await page.evaluate(() => document.fonts.ready);
+  await decodeImages(page);
+  await waitForSettledParallax(page);
+  await page.screenshot({ path: out("15-ukrainian-forest") });
+
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await page.evaluate(() => document.fonts.ready);
   for (const image of await page.locator('img[loading="lazy"]').all()) await image.scrollIntoViewIfNeeded();
   await decodeImages(page);
   await scrollToY(page, 0);
-  await page.screenshot({ path: out("15-full-static"), fullPage: true });
+  await page.screenshot({ path: out("16-full-static"), fullPage: true });
 });

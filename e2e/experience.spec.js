@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { contrastOverBackground, scrollToY } from "./helpers.js";
+import { changedPixelShare, contrastOverBackground, scrollToY } from "./helpers.js";
 
 const isMobileProject = (testInfo) => testInfo.project.name === "mobile-chromium";
 
@@ -154,6 +154,10 @@ test("Reduced in Motion Lab also stops the motion CSS owns", async ({ page }) =>
   );
   expect(running).toEqual([]);
   await expect(page.locator("html")).toHaveCSS("scroll-behavior", "auto");
+
+  await page.locator("#extension").scrollIntoViewIfNeeded();
+  await expect(page.locator("[data-fireflies]")).toHaveAttribute("data-state", "off");
+  await expect(page.locator("[data-fireflies]")).toBeHidden();
 });
 
 test("Motion Lab velocity settles back to zero when scrolling stops", async ({ page }) => {
@@ -307,6 +311,54 @@ test("a fine pointer moves the intro glow", async ({ page }, testInfo) => {
   await expect.poll(glowX).toBeGreaterThan(40);
 });
 
+test("WebGL fireflies draw only while the intro is on screen", async ({ page, browserName }) => {
+  await page.goto("/");
+  const canvas = page.locator("[data-fireflies]");
+  await expect(canvas).not.toHaveAttribute("data-state", "off");
+
+  // GPU-less CI runners may have no WebGL outside Chromium; the canvas then stays hidden.
+  const supported = (await canvas.getAttribute("data-state")) !== "unsupported";
+  if (browserName === "chromium") expect(supported, "Chromium always offers WebGL").toBe(true);
+  test.skip(!supported, "No WebGL context in this browser here; the page goes on without the canvas");
+
+  await expect(canvas).toHaveAttribute("data-state", "paused");
+  await page.locator("#extension").scrollIntoViewIfNeeded();
+  await expect(canvas).toHaveAttribute("data-state", "running");
+  const frames = async () => Number((await canvas.getAttribute("data-frames")) ?? 0);
+  const before = await frames();
+  await expect.poll(frames).toBeGreaterThan(before);
+
+  await page.locator("#principles").scrollIntoViewIfNeeded();
+  await expect(canvas).toHaveAttribute("data-state", "paused");
+  const stopped = await frames();
+  await page.waitForTimeout(600);
+  expect(await frames()).toBe(stopped);
+});
+
+test("the fireflies really paint over the intro", async ({ page }, testInfo) => {
+  test.skip(!testInfo.project.name.includes("chromium"), "Pixel sampling runs in Chromium, desktop and mobile");
+
+  await page.goto("/");
+  await page.locator("#extension").evaluate((element) => {
+    document.documentElement.style.scrollBehavior = "auto";
+    element.scrollIntoView();
+  });
+  const canvas = page.locator("[data-fireflies]");
+  await expect(canvas).toHaveAttribute("data-state", "running");
+  await expect(canvas).toHaveCSS("opacity", "1");
+  // Compare the same frame of the scene with and without the canvas; the copy is
+  // hidden so only the particle field can differ.
+  await page.addStyleTag({ content: ".extension-intro__inner { visibility: hidden !important; }" });
+  const viewport = page.viewportSize();
+  const clip = { x: 0, y: 0, width: viewport.width, height: viewport.height };
+  const lit = await page.screenshot({ clip });
+  const hide = await page.addStyleTag({ content: ".fireflies { visibility: hidden !important; }" });
+  const dark = await page.screenshot({ clip });
+  await hide.evaluate((element) => element.remove());
+
+  expect(await changedPixelShare(page, lit, dark)).toBeGreaterThan(0.002);
+});
+
 test("without JavaScript the whole story is still there", async ({ browser, baseURL }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "Progressive enhancement is checked once, in Chromium");
 
@@ -334,7 +386,7 @@ test("system scene exposes the architecture as readable content", async ({ page 
   await expect(system.getByText("getMotionProfile()", { exact: true })).toBeVisible();
 });
 
-for (const language of ["fi", "en"]) {
+for (const language of ["fi", "en", "uk"]) {
   test(`no serious or critical accessibility violations (${language})`, async ({ page }) => {
     await page.goto(`/?lang=${language}`);
     await expect(page.locator("html")).toHaveAttribute("lang", language);

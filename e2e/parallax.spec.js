@@ -61,8 +61,9 @@ test("the title is fully legible on arrival, then sinks behind the forest", asyn
   expect(await visibleTextShare(page, "#original-title")).toBeLessThan(0.93);
 });
 
-test("the title stays legible on common screens in both languages", async ({ browser, baseURL }, testInfo) => {
+test("name, role and title stay legible on common screens in every language", async ({ browser, baseURL }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "The screen sweep runs once, in Chromium");
+  test.setTimeout(120_000);
 
   const screens = {
     "1366×768": { viewport: { width: 1366, height: 768 } },
@@ -75,14 +76,14 @@ test("the title stays legible on common screens in both languages", async ({ bro
     "844×390": { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, deviceScaleFactor: 3 },
   };
 
-  for (const language of ["fi", "en"]) {
+  for (const language of ["fi", "en", "uk"]) {
     for (const [name, options] of Object.entries(screens)) {
       const context = await browser.newContext({ ...options, baseURL });
       const page = await context.newPage();
       await page.goto(`/?lang=${language}`);
       await page.evaluate(() => document.fonts.ready);
       await waitForSettledParallax(page);
-      expect(await visibleTextShare(page, "#original-title"), `${language} ${name}`).toBeGreaterThan(0.97);
+      expect(await visibleTextShare(page, "[data-original-copy]"), `${language} ${name}`).toBeGreaterThan(0.97);
       await context.close();
     }
   }
