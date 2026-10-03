@@ -157,3 +157,33 @@ export async function contrastOverBackground(page, selector, phasesMs = [0, 4000
   await hideText.evaluate((node) => node.remove());
   return worst;
 }
+
+// Share of pixels that differ (any channel by more than `threshold`) between two
+// screenshots of the same clip: 0 = identical, 1 = every pixel changed.
+export async function changedPixelShare(page, before, after, threshold = 24) {
+  return page.evaluate(
+    async ({ a, b, limit }) => {
+      const read = async (base64) => {
+        const bitmap = await createImageBitmap(await (await fetch(`data:image/png;base64,${base64}`)).blob());
+        const canvas = document.createElement("canvas");
+        canvas.width = bitmap.width;
+        canvas.height = bitmap.height;
+        const context = canvas.getContext("2d");
+        context.drawImage(bitmap, 0, 0);
+        return context.getImageData(0, 0, canvas.width, canvas.height).data;
+      };
+      const [first, second] = await Promise.all([read(a), read(b)]);
+      let changed = 0;
+      for (let index = 0; index < first.length; index += 4) {
+        const delta = Math.max(
+          Math.abs(first[index] - second[index]),
+          Math.abs(first[index + 1] - second[index + 1]),
+          Math.abs(first[index + 2] - second[index + 2]),
+        );
+        if (delta > limit) changed += 1;
+      }
+      return changed / (first.length / 4);
+    },
+    { a: before.toString("base64"), b: after.toString("base64"), limit: threshold },
+  );
+}

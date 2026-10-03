@@ -1,3 +1,4 @@
+import { initFireflies } from "./fireflies.js";
 import { initI18n } from "./i18n.js";
 import { initOriginalParallax } from "./original-parallax.js";
 import { getMotionProfile } from "./motion-model.js";
@@ -16,6 +17,7 @@ let preferences = loadMotionPreferences();
 let cleanupMotion = () => {};
 let cleanupOriginalParallax = () => {};
 let cleanupPointer = () => {};
+let cleanupFireflies = () => {};
 let motionLab = null;
 let currentScene = null;
 
@@ -80,6 +82,7 @@ function syncOriginalParallax() {
 function syncMotion() {
   cleanupMotion();
   cleanupPointer();
+  cleanupFireflies();
 
   const profile = createProfile();
   document.documentElement.dataset.motion = profile.mode;
@@ -87,6 +90,7 @@ function syncMotion() {
 
   cleanupMotion = initScrollMotion(profile);
   cleanupPointer = initPointerDepth(profile);
+  cleanupFireflies = initFireflies(profile);
   motionLab?.setProfile(profile);
   motionLab?.setSystemReduced(reducedMotionQuery.matches);
 }
@@ -138,6 +142,7 @@ function start() {
       cleanupMotion();
       cleanupOriginalParallax();
       cleanupPointer();
+      cleanupFireflies();
       motionLab?.cleanup();
       i18n.cleanup();
       reducedMotionQuery.removeEventListener("change", onReducedMotionChange);

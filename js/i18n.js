@@ -1,164 +1,35 @@
-// Finnish is the language of the markup. English lives here, keyed by the
-// data-i18n / data-i18n-attr names in index.html. Finnish strings are read back
-// from the DOM, so there is a single source for each language.
+// Finnish is the language of the markup. English and Ukrainian live in
+// js/i18n/, keyed by the data-i18n / data-i18n-attr names in index.html.
+// Finnish strings are read back from the DOM, so each language has one source.
+import EN from "./i18n/en.js";
+import UK from "./i18n/uk.js";
 
-export const LANGUAGES = ["fi", "en"];
+export { EN, UK };
+
+export const LANGUAGES = ["fi", "en", "uk"];
 export const DEFAULT_LANGUAGE = "fi";
 export const STORAGE_KEY = "nordic-depths:lang";
 
-// Strings that only exist at runtime (Motion Lab readouts), in both languages.
+// "ua" is what many people type for Ukrainian; the language code is "uk".
+const ALIASES = { ua: "uk" };
+
+// Strings that only exist at runtime (Motion Lab readouts).
 export const RUNTIME = {
   fi: { stateOn: "Päällä", stateOff: "Pois" },
   en: { stateOn: "On", stateOff: "Off" },
+  uk: { stateOn: "Увімк.", stateOff: "Вимк." },
 };
 
-export const EN = {
-  docTitle: "Mykola Dotsenko — software developer in Turku · Nordic Depths",
-  metaDescription:
-    "Mykola Dotsenko builds digital products that work with Python, Django, React and TypeScript. The portfolio starts in a 2023 parallax forest and grows into a story about clear layers.",
+const TRANSLATIONS = { en: EN, uk: UK };
 
-  skip: "Skip to content",
-  brandLabel: "Nordic Depths — back to top",
-  navLabel: "Main navigation",
-  navStory: "Story",
-  navPrinciples: "Principles",
-  navContact: "Contact",
-
-  compassLabel: "Scenes",
-  sceneOrigin: "Origin",
-  sceneIdea: "Idea",
-  sceneLayers: "Layers",
-  sceneFocus: "Focus",
-  sceneRhythm: "Rhythm",
-  sceneCraft: "Craft",
-  sceneStructure: "Structure",
-  sceneOutcome: "Outcome",
-
-  labEyebrow: "Live motion controls",
-  labClose: "Close Motion Lab",
-  labIntro:
-    "See how the same layered idea behaves further down. Motion Lab only changes the new continuation — the original 2023 parallax stays exactly as it was.",
-  labProfile: "Experience profile",
-  profileSystem: "System",
-  profileFull: "Full",
-  profileCompact: "Compact",
-  profileReduced: "Reduced",
-  labIntensity: "Extension intensity",
-  labTelemetry: "Live motion telemetry",
-  labActiveProfile: "Active profile",
-  labSystemReduce: "System reduce",
-  labScene: "Current scene",
-  labVelocity: "Scroll velocity",
-  labReset: "Reset to system",
-  labStorage: "Preferences stay on this device.",
-
-  heroCaption: "Welcome to my portfolio",
-  heroTitle: "I build digital products that work.",
-  aboutTitle: "I’m Mykola Dotsenko — a software developer from Turku.",
-  aboutText:
-    "I design and build modern web services with Python, Django, React and TypeScript. To me, good software means a clear user experience, simple architecture and reliable delivery. I keep growing my skills and look for solutions that create real value for users and the business.",
-  aboutNext: "Continue the story",
-  aboutGoal: "My goal is to combine a clear user experience, strong technical execution and real business value",
-
-  introEyebrow: "02 / From parallax to product thinking",
-  introTitle1: "The same idea",
-  introTitle2: "grew with me.",
-  introText:
-    "This forest began as a simple parallax experiment. The lesson outlived the demo: clear layers make complex things easier to understand. That same principle now shapes how I design interfaces, motion, and software systems.",
-  introSignals: "Story continuity",
-  introSignal1: "first experiment",
-  introSignal2: "visible layers",
-  introSignal3: "idea carried forward",
-
-  xrayIndex: "03 / Layers",
-  xrayKicker: "Every experience has structure",
-  xrayTitle: "Start with layers.<br />Give each one a job.",
-  xrayText:
-    "The forest works because background, middle, and foreground each behave differently. Good product architecture follows the same idea: separate responsibilities, make relationships clear, and let every layer earn its place.",
-  xrayLegend: "Depth layer speeds",
-  layerFar: "Far",
-  layerMiddle: "Middle",
-  layerNear: "Near",
-
-  mistIndex: "04 / Focus",
-  mistKicker: "Hierarchy guides attention",
-  mistTitle: "Depth is useful when it makes the next step obvious.",
-  mistText:
-    "The same visual depth that makes the forest readable also guides interface design: important things come forward, supporting context recedes, and the user always knows where to look next.",
-  mistSignals: "Focus signals",
-  mistSignal1: "clear focus",
-  mistSignal2: "depth planes",
-  mistSignal3: "decorative noise",
-
-  nightIndex: "05 / Rhythm",
-  nightKicker: "Interaction should follow intent",
-  nightTitle: "Motion should explain change, not compete for attention.",
-  nightText:
-    "The user sets the pace. Native scrolling stays authoritative while motion adds context around that intent. When movement is reduced or removed, the experience still communicates the same structure and meaning.",
-  nightNote:
-    "If motion disappears, the experience still makes sense. Enhancement should add meaning, never carry it alone.",
-
-  craftIndex: "06 / Craft",
-  craftTitle: "The visual idea becomes an engineering discipline.",
-  craft1Title: "Clear layers",
-  craft1Text:
-    "Each responsibility has one place. The original parallax, modern scene motion, user preferences, and semantic content stay deliberately separated.",
-  craft2Title: "Adaptive by default",
-  craft2Text:
-    "The experience adapts to pointer type, screen size, and <code>prefers-reduced-motion</code> without changing the underlying story.",
-  craft3Title: "Quality without waste",
-  craft3Text:
-    "Keep what creates value, remove what does not. The original artwork keeps its full look as lightweight WebP variants, while code, loading, and compositing carry the performance work.",
-
-  systemIndex: "07 / Structure",
-  systemKicker: "The craft beneath the scene",
-  systemTitle: "Simple parts.<br />Clear boundaries.",
-  systemText:
-    "The same layered thinking becomes architecture: system signals resolve into one motion profile, small adapters handle browser behavior, and semantic HTML remains the stable center of the experience.",
-  systemSignals: "Architecture constraints",
-  systemSignal1: "scroll source",
-  systemSignal2: "motion model",
-  systemSignal3: "browser adapters",
-  systemFlow: "Motion architecture flow",
-  systemAdapters: "Browser adapters",
-  node1Index: "01 / Signals",
-  node1Title: "System + user",
-  node1Text: "Media queries and locally persisted Motion Lab preferences.",
-  node2Index: "02 / Pure model",
-  node2Title: "Motion profile",
-  node2Text: "One deterministic function clamps intensity and selects behavior.",
-  node3Index: "03 / Scroll",
-  node3Title: "Scroll adapter",
-  node3Text: "ScrollTrigger maps native scroll to bounded transforms.",
-  node4Index: "04 / Pointer",
-  node4Title: "Pointer adapter",
-  node4Text: "Fine pointers get one frame-coalesced depth signal.",
-  node5Index: "05 / Output",
-  node5Title: "Semantic DOM",
-  node5Text: "The same content survives when every enhancement disappears.",
-
-  outcomeIndex: "08 / Outcome",
-  outcomeTitle: "Complex should feel simple.",
-  outcomeText:
-    "That is the thread through the whole page: layers create depth, hierarchy creates focus, motion creates context, and clear architecture keeps the experience dependable.",
-  contactTitle: "Let’s talk",
-  contactText: "Tell me about your project or team — I’m happy to talk.",
-  contactMeta: "Mykola Dotsenko · Software developer · Turku, Finland",
-  contactSource: "Source code",
-  contactNotes: "Engineering notes",
-
-  footerText: "Nordic Depths · From parallax experiment to product engineering story",
-  footerLabel: "Footer",
-  footerTop: "Back to top",
-};
-
-let finnish = null;
+export function normalizeLanguage(value) {
+  const code = String(value ?? "").toLowerCase();
+  const language = ALIASES[code] ?? code;
+  return LANGUAGES.includes(language) ? language : null;
+}
 
 export function resolveLanguage({ search = "", stored = null } = {}) {
-  const requested = new URLSearchParams(search).get("lang");
-  if (LANGUAGES.includes(requested)) return requested;
-  if (LANGUAGES.includes(stored)) return stored;
-  return DEFAULT_LANGUAGE;
+  return normalizeLanguage(new URLSearchParams(search).get("lang")) ?? normalizeLanguage(stored) ?? DEFAULT_LANGUAGE;
 }
 
 function parseAttrBindings(value) {
@@ -184,6 +55,8 @@ export function captureStrings(root = document) {
   return strings;
 }
 
+let finnish = null;
+
 export function initI18n({ storage, onChange = () => {} } = {}) {
   const store = (() => {
     try {
@@ -200,9 +73,13 @@ export function initI18n({ storage, onChange = () => {} } = {}) {
     }
   };
 
-  // Captured once: a page restored from the back/forward cache may already show English.
+  // Captured once: a page restored from the back/forward cache may already be translated.
   finnish ??= { ...captureStrings(), ...RUNTIME.fi };
-  const dictionaries = { fi: finnish, en: { ...EN, ...RUNTIME.en } };
+  const dictionaries = { fi: finnish };
+  for (const [language, strings] of Object.entries(TRANSLATIONS)) {
+    dictionaries[language] = { ...strings, ...RUNTIME[language] };
+  }
+
   const buttons = Array.from(document.querySelectorAll("[data-lang-option]"));
   const switcher = document.querySelector("[data-lang-switch]");
   let current = DEFAULT_LANGUAGE;
@@ -229,18 +106,19 @@ export function initI18n({ storage, onChange = () => {} } = {}) {
   };
 
   const setLanguage = (language, { persist = true } = {}) => {
-    if (!LANGUAGES.includes(language)) return;
-    const changed = language !== current;
-    current = language;
-    apply(language);
+    const next = normalizeLanguage(language);
+    if (!next) return;
+    const changed = next !== current;
+    current = next;
+    apply(next);
     if (persist) {
       try {
-        store?.setItem(STORAGE_KEY, language);
+        store?.setItem(STORAGE_KEY, next);
       } catch {
         // Storage is optional; the choice still applies to this page.
       }
     }
-    if (changed) onChange(language);
+    if (changed) onChange(next);
   };
 
   const onClick = (event) => {

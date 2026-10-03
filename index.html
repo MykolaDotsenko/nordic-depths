@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
-    <title>Mykola Dotsenko — ohjelmistokehittäjä Turusta · Nordic Depths</title>
+    <title>Mykola Dotsenko — full-stack-kehittäjä Turusta · Nordic Depths</title>
     <meta
       name="description"
       content="Mykola Dotsenko rakentaa toimivia digitaalisia tuotteita Pythonilla, Djangolla, Reactilla ja TypeScriptillä. Portfolio alkaa vuoden 2023 parallaksimetsästä ja kasvaa tarinaksi selkeistä kerroksista."
@@ -15,7 +15,8 @@
     <meta property="og:type" content="profile" />
     <meta property="og:locale" content="fi_FI" />
     <meta property="og:locale:alternate" content="en_US" />
-    <meta property="og:title" content="Mykola Dotsenko — ohjelmistokehittäjä · Nordic Depths" />
+    <meta property="og:locale:alternate" content="uk_UA" />
+    <meta property="og:title" content="Mykola Dotsenko — full-stack-kehittäjä · Nordic Depths" />
     <meta
       property="og:description"
       content="Vuoden 2023 kerroksellinen metsä kasvaa tarinaksi fokuksesta, rytmistä, taidosta ja saavutettavasta liikkeestä."
@@ -24,7 +25,7 @@
     <meta property="og:image" content="https://mykoladotsenko.github.io/nordic-depths/img/og-image.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Hämärä kerroksellinen metsä ja teksti Rakennan toimivia digitaalisia tuotteita" />
+    <meta property="og:image:alt" content="Hämärä kerroksellinen metsä: Mykola Dotsenko, full-stack-kehittäjä — Rakennan toimivia digitaalisia tuotteita" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://mykoladotsenko.github.io/nordic-depths/img/og-image.jpg" />
 
@@ -38,16 +39,22 @@
 
     <script>
       // Runs before first paint: mark JS early and avoid a flash of Finnish text
-      // when English was requested (?lang=en or a stored choice).
+      // when another language was requested (?lang=en|uk or a stored choice).
       (function () {
         var root = document.documentElement;
         root.classList.add("js");
         try {
-          var param = new URLSearchParams(location.search).get("lang");
-          var stored = localStorage.getItem("nordic-depths:lang");
-          var lang = param === "en" || param === "fi" ? param : stored === "en" ? "en" : "fi";
-          if (lang === "en") {
-            root.lang = "en";
+          var pick = function (value) {
+            var code = String(value || "").toLowerCase();
+            if (code === "ua") code = "uk";
+            return code === "fi" || code === "en" || code === "uk" ? code : null;
+          };
+          var lang =
+            pick(new URLSearchParams(location.search).get("lang")) ||
+            pick(localStorage.getItem("nordic-depths:lang")) ||
+            "fi";
+          if (lang !== "fi") {
+            root.lang = lang;
             root.classList.add("i18n-pending");
             setTimeout(function () {
               if (root.classList.contains("i18n-pending")) {
@@ -70,7 +77,7 @@
         "@context": "https://schema.org",
         "@type": "Person",
         "name": "Mykola Dotsenko",
-        "jobTitle": "Software Developer",
+        "jobTitle": "Full-stack Developer",
         "url": "https://mykoladotsenko.github.io/nordic-depths/",
         "address": { "@type": "PostalAddress", "addressLocality": "Turku", "addressCountry": "FI" },
         "knowsAbout": ["Python", "Django", "React", "TypeScript"],
@@ -95,9 +102,10 @@
       </nav>
 
       <div class="site-header__actions">
-        <div class="lang-switch" role="group" aria-label="Kieli / Language" data-lang-switch hidden>
-          <button type="button" lang="fi" data-lang-option="fi" aria-pressed="true">FI</button>
-          <button type="button" lang="en" data-lang-option="en" aria-pressed="false">EN</button>
+        <div class="lang-switch" role="group" aria-label="Kieli · Language · Мова" data-lang-switch hidden>
+          <button type="button" lang="fi" data-lang-option="fi" aria-pressed="true" aria-label="FI · Suomi">FI</button>
+          <button type="button" lang="en" data-lang-option="en" aria-pressed="false" aria-label="EN · English">EN</button>
+          <button type="button" lang="uk" data-lang-option="uk" aria-pressed="false" aria-label="UA · Українська">UA</button>
         </div>
 
         <button
@@ -192,12 +200,14 @@
       >
         <header class="original-main-header">
           <div class="original-layers" data-original-layers>
-            <div class="original-layer__header" data-original-copy>
-              <p class="original-layers__caption" data-i18n="heroCaption">Tervetuloa portfoliooni</p>
+            <hgroup class="original-layer__header" data-original-copy>
+              <p class="original-layers__caption" data-i18n="heroCaption">
+                <span>Mykola Dotsenko</span> <span>Full-stack-kehittäjä</span>
+              </p>
               <h1 id="original-title" class="original-layers__title" data-i18n="heroTitle">
                 Rakennan toimivia digitaalisia tuotteita.
               </h1>
-            </div>
+            </hgroup>
 
             <div class="original-layer original-layers__base" data-original-layer="far" aria-hidden="true">
               <picture>
@@ -291,6 +301,7 @@
         data-i18n-attr="data-scene-label:sceneIdea"
       >
         <div class="extension-intro__backdrop" aria-hidden="true" data-bridge-backdrop></div>
+        <canvas class="fireflies" aria-hidden="true" data-fireflies data-state="off"></canvas>
         <div class="extension-intro__glow" aria-hidden="true">
           <span class="extension-intro__glow-a"></span>
           <span class="extension-intro__glow-b"></span>

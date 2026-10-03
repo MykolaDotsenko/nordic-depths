@@ -3,7 +3,7 @@
   "version": "3.0.0",
   "private": true,
   "type": "module",
-  "description": "Bilingual portfolio that keeps a 2023 layered parallax and grows it into an accessible, tested motion story.",
+  "description": "Finnish, English and Ukrainian portfolio that keeps a 2023 layered parallax and grows it into an accessible, tested motion story.",
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "build": "node scripts/build-site.mjs",
